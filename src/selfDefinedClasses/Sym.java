@@ -10,7 +10,7 @@ public class Sym {
 	 * This is the constructor; it should initialize the Sym to have the given type.
 	 * @param type
 	 */
-	Sym(String type){
+	public Sym(String type){
 		this.symType = type;
 	}
 	/**
