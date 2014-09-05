@@ -13,7 +13,7 @@ public class SymTable {
 	 * Constructor. Initialize a list contains an empty symbol table
 	 * 
 	 */
-	SymTable(){
+	public SymTable(){
 		HashMap<String, Sym> st = new HashMap<String, Sym>();
 		symTableList= new LinkedList<HashMap<String, Sym>>();
 		symTableList.add(st);
