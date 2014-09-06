@@ -163,9 +163,9 @@ public class P1 {
 		}
 		
 		if(isFail)
-			System.out.print("\nOverview: Failed");
+			System.out.print("\nOverview: Failed\n");
 		else
-			System.out.print("\nOverview: Passed");
+			System.out.print("\nOverview: Passed\n");
 	
 	}
 }
