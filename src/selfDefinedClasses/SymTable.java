@@ -110,4 +110,13 @@ public class SymTable {
 		}
 		System.out.println();
 	}
+	
+	/**
+	 * Get the size of the symbolttable
+	 * @return how many scopes in symTable
+	 */
+	public int size(){
+		return symTableList.size();
+	}
+	
 }
