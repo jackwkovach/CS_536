@@ -1,4 +1,4 @@
-package selfDefinedClasses;
+package Projects;
 /**
  * The Sym class is a data structure used for Symbol Table.
  * @author Junhan

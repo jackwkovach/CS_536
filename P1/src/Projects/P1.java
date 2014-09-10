@@ -1,9 +1,5 @@
 package Projects;
 
-import selfDefinedClasses.DuplicateSymException;
-import selfDefinedClasses.EmptySymTableException;
-import selfDefinedClasses.Sym;
-import selfDefinedClasses.SymTable;
 
 /**
  * This class tests if the SymTable is functioning well
