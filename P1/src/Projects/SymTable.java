@@ -1,4 +1,4 @@
-package selfDefinedClasses;
+package Projects;
 
 import java.util.ArrayList;
 import java.util.HashMap;
