@@ -10,4 +10,6 @@ Or you can compile by yourself: <br/>
 `javac -sourcepath src -d bin src/**/*.java` then run it.
 
 ####Project 1
-Write a SymTable and test it
+* Write a SymTable and test it
+* Test if example's output is exactly the same with mine
+
