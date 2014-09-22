@@ -11,5 +11,5 @@ Or you can compile by yourself: <br/>
 
 ####Project 1
 * Write a SymTable and test it
-* Test if example's output is exactly the same with mine
+* Test if example's output is **exactly** the same with mine
 
