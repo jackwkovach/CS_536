@@ -59,18 +59,17 @@ class CharNum {
 DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
 
-// The next 3 lines are included so that we can use the generated scanner
-// with java CUP (the Java parser generator)
+RESERVED = bool|int|void|true|false|struct|cin|cout|if|else|while|return 
+
+
 %implements java_cup.runtime.Scanner
 %function next_token
 %type java_cup.runtime.Symbol
 
-// Tell JLex what to do on end-of-file
 %eofval{
 return new Symbol(sym.EOF);
 %eofval}
 
-// Turn on line counting
 %line
 
 %%
@@ -97,3 +96,6 @@ return new Symbol(sym.EOF);
                          "ignoring illegal character: " + yytext());
             CharNum.num++;
           }
+
+[_a-zA-Z][a-zA-Z0-9_] { }
+
