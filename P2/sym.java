@@ -1,4 +1,4 @@
-/** Symbol constants */
+/** ymbol constants */
 public class sym {
   /* terminals */
   public static final int PLUSPLUS = 26;
@@ -42,5 +42,7 @@ public class sym {
   public static final int STRINGLITERAL = 16;
   public static final int FALSE = 6;
   public static final int STRUCT = 7;
+
+
 }
 
