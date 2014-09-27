@@ -12,9 +12,9 @@ public class P2 {
     public static void main(String[] args) throws IOException {
                                            // exception may be thrown by yylex
         // test all tokens
-        testAllTokens();
-        CharNum.num = 1;
-    
+	testAllTokens("allTokens.in", "allTokens.out");
+	CharNum.num = 1;
+
         // ADD CALLS TO OTHER TEST METHODS HERE
     }
 
@@ -27,13 +27,17 @@ public class P2 {
      * correctness of the scanner by comparing the input and output files
      * (e.g., using a 'diff' command).
      */
-    private static void testAllTokens() throws IOException {
+    private static void testAllTokens(String fin, String fout) throws IOException {
         // open input and output files
         FileReader inFile = null;
         PrintWriter outFile = null;
         try {
-            inFile = new FileReader("allTokens.in");
-            outFile = new PrintWriter(new FileWriter("allTokens.out"));
+
+	    // inFile = new FileReader("allTokens.in");
+            //outFile = new PrintWriter(new FileWriter("allTokens.out"));
+
+	    inFile = new FileReader(fin);
+            outFile = new PrintWriter(new FileWriter(fout));
         } catch (FileNotFoundException ex) {
             System.err.println("File allTokens.in not found.");
             System.exit(-1);
