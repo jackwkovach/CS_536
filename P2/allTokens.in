@@ -9,6 +9,13 @@ x
 
 "good string good escape \n \t   \"\\ \' "
 
+"bad string with new line
+abc
+
+haha
+
+"
+
 
 "bad escape and terminated \y\o"
 

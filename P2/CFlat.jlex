@@ -156,7 +156,7 @@ return new Symbol(sym.EOF);
             return S;
           }
 
-[\"][^\"]*[^\"]$
+([\"][^\"\n]*[^\"\n])|([\n][\"])
 	{// unterminated string
 	    ErrMsg.fatal(yyline+1, CharNum.num,
             "unterminated string literal ignored" + yytext());

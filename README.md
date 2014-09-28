@@ -13,3 +13,7 @@ Or you can compile by yourself: <br/>
 * Write a SymTable and test it
 * Test if example's output is **exactly** the same with mine
 
+####Project 2
+* Edit CFlat.jlex
+* Add test cases
+* Extend P2.java to test
