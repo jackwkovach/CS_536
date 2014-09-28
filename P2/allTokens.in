@@ -2,20 +2,26 @@
 +
 x
 
+id1
+id2
 
-
+1111111111111111111111111111111
+-7777
 
 "good string"
 
 "good string good escape \n \t   \"\\ \' "
 
 "bad string with new line
+
 abc
 
 haha
 
 "
+mess"
 
+(EOF)"  // have question # don't know how to deal with it
 
 "bad escape and terminated \y\o"
 
@@ -36,7 +42,7 @@ haha
 
 //
 
-bad comment
+not a comment
 
 # 
-bad comment 2
+not a comment 2
