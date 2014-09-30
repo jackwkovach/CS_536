@@ -1,0 +1,65 @@
+// // Tokens Test with spaces
+// bool
+// int 
+// void bool  int			 void  true  false  struct
+
+// cin   cout  if    else  while  return
+
+// // # Identifiers Test
+// Id1
+// _ID2
+// _wired__ID3
+
+// IllegalID^%
+
+// // Integer Literal Test
+// // normal number
+// 123
+// // very large number
+// 1111111111111111111111111111111
+// // no negative number defined in assignment, pass..
+
+// Operand Test
+{      }      (      )      ;      
+,      .      <<     >>     ++
+--     +      -      *      /
+!      &&     ||     ==     !=
+<      >      <=     >=     =
+
+
+// String Literal Test
+"good string"
+
+"good string and good escape \n \t   \"\\ \' "
+
+"bad string with new line
+
+haha    // should recognized as identifier
+
+"
+
+mess"
+
+EOF"  // have question # don't know how to deal with it
+
+"bad escape and terminated string \y\o, more are coming..."
+
+"bad escape and unterminated \p  \m \"
+
+"another unterminated  \
+
+"just unterminated string  
+
+"unterminated string with bad escape \a , lol
+
+
+// comment is easy to test
+
+# comment 2
+
+// not comments, see how it's going to be
+
+not a comment
+
+# 
+not a comment 2

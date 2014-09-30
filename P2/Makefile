@@ -34,8 +34,28 @@ ErrMsg.class: ErrMsg.java
 # to expected results
 ###
 test:
-	java -cp ~cs536-1/public/tools/deps:. P2 allTokens.in
-#	diff -c allTokens.in allTokens.out
+	java -cp ~cs536-1/public/tools/deps:. P2 5
+	diff -c allTokens.in allTokens.out
+	diff -c IDTest.out IDTest_expect.out 
+	diff -c IntegerLiteralTest.out IntegerLiteralTest_expect.out
+	diff -c StringLiteralTest.out StringLiteralTest_expect.out
+
+tokenTest:
+	java -cp ~cs536-1/public/tools/deps:. P2 1
+	diff -c allTokens.in allTokens.out
+
+idTest:
+	java -cp ~cs536-1/public/tools/deps:. P2 2
+	diff -c IDTest.out IDTest_expect.out 
+
+intTest:
+	java -cp ~cs536-1/public/tools/deps:. P2 3
+	diff -c IntegerLiteralTest.out IntegerLiteralTest_expect.out
+
+strTest:
+	java -cp ~cs536-1/public/tools/deps:. P2 4
+	diff -c StringLiteralTest.out StringLiteralTest_expect.out
+
 ###
 # clean up
 ###

@@ -12,23 +12,137 @@ public class P2 {
     public static void main(String[] args) throws IOException {
                                            // exception may be thrown by yylex
         // test all tokens
-	
-	//	System.out.println(args[0]);
-	testAllTokens(args[0], "allTokens.out");
-	CharNum.num = 1;
+	int opNum = Integer.parseInt(args[0]);
+	// see if every good token can be recognized
+	switch(opNum){
+	case 1:
+	    testAllTokens("allTokens.in", "allTokens.out");
+	    CharNum.num = 1;
+	    break;
 
+	case 2:
+	    testID("IDTest.in", "IDTest.out");
+	    CharNum.num = 1;
+	    break;
+
+	case 3:
+	    testIntegerLiteral("IntegerLiteralTest.in", "IntegerLiteralTest.out");
+	    CharNum.num = 1;
+	    break;
+
+	case 4:
+	    testStringLiteral("StringLiteralTest.in", "StringLiteralTest.out");
+	    CharNum.num = 1;
+	    break;
+
+	default:
+	    // test all
+	    testAllTokens("allTokens.in", "allTokens.out");
+	    CharNum.num = 1;
+
+	    testID("IDTest.in", "IDTest.out");
+	    CharNum.num = 1;
+	
+	    testIntegerLiteral("IntegerLiteralTest.in", "IntegerLiteralTest.out");
+	    CharNum.num = 1;
+
+	    testStringLiteral("StringLiteralTest.in", "StringLiteralTest.out");
+	    CharNum.num = 1;
+
+	}
         // ADD CALLS TO OTHER TEST METHODS HERE
     }
 
-    private static void showTokenInfo(String type, String val, Symbol token){
-	    int tokenLine = ((TokenVal)token.value).linenum;
-	    int tokenCharnum = ((TokenVal)token.value).charnum;
+    private static void testID(String fin, String fout) throws IOException {
+        // open input and output files
+        FileReader inFile = null;
+        PrintWriter outFile = null;
+        try {
 
-	    System.out.print("*** " + type.toUpperCase()+" ***");
-	    System.out.println("   "+ val+" - "+tokenLine+":"+tokenCharnum);
+	    inFile = new FileReader(fin);
+            outFile = new PrintWriter(new FileWriter(fout));
+        } catch (FileNotFoundException ex) {
+            System.err.println(fin +" not found.");
+            System.exit(-1);
+        } catch (IOException ex) {
+            System.err.println(fout + " cannot be opened.");
+            System.exit(-1);
+        }
+
+        // create and call the scanner
+        Yylex scanner = new Yylex(inFile);
+        Symbol token = scanner.next_token();
+        while (token.sym != sym.EOF) {
+	    if(token.sym == sym.ID){
+		String idVal = ((IdTokenVal)token.value).idVal;
+		showTokenInfo("Identifier", idVal, token);
+		outFile.println(idVal);
+	    }
+            token = scanner.next_token();
+	}
+        outFile.close();
     }
 
+    private static void testIntegerLiteral(String fin, String fout) throws IOException {
+        // open input and output files
+        FileReader inFile = null;
+        PrintWriter outFile = null;
+        try {
 
+	    inFile = new FileReader(fin);
+            outFile = new PrintWriter(new FileWriter(fout));
+        } catch (FileNotFoundException ex) {
+            System.err.println(fin + " not found.");
+            System.exit(-1);
+        } catch (IOException ex) {
+            System.err.println(fout + " cannot be opened.");
+            System.exit(-1);
+        }
+
+        // create and call the scanner
+        Yylex scanner = new Yylex(inFile);
+        Symbol token = scanner.next_token();
+        while (token.sym != sym.EOF) {
+	    if(token.sym == sym.INTLITERAL){
+		int intVal = ((IntLitTokenVal)token.value).intVal;
+		showTokenInfo("Integer Literal", Integer.toString(intVal),token);
+                outFile.println(intVal);
+	    }
+            token = scanner.next_token();
+	}
+        outFile.close();
+    }
+
+    private static void testStringLiteral(String fin, String fout) throws IOException {
+        // open input and output files
+        FileReader inFile = null;
+        PrintWriter outFile = null;
+        try {
+
+	    inFile = new FileReader(fin);
+            outFile = new PrintWriter(new FileWriter(fout));
+        } catch (FileNotFoundException ex) {
+            System.err.println(fin + " not found.");
+            System.exit(-1);
+        } catch (IOException ex) {
+            System.err.println(fout + " cannot be opened.");
+            System.exit(-1);
+        }
+
+        // create and call the scanner
+        Yylex scanner = new Yylex(inFile);
+        Symbol token = scanner.next_token();
+        while (token.sym != sym.EOF) {
+
+	    if(token.sym == sym.STRINGLITERAL) {
+		String strVal = ((StrLitTokenVal)token.value).strVal;
+		showTokenInfo("String Literal", strVal, token);
+                outFile.println(strVal);
+	    }
+            token = scanner.next_token();
+	}
+        outFile.close();
+    }
 
     /**
      * testAllTokens
@@ -248,4 +362,18 @@ public class P2 {
         } // end while
         outFile.close();
     }
+
+    /**
+       Helper
+     */
+
+    private static void showTokenInfo(String type, String val, Symbol token){
+	    int tokenLine = ((TokenVal)token.value).linenum;
+	    int tokenCharnum = ((TokenVal)token.value).charnum;
+
+	    System.out.print("*** " + type.toUpperCase()+" ***");
+	    System.out.println("   "+ val+" - "+tokenLine+":"+tokenCharnum);
+    }
+
+
 }

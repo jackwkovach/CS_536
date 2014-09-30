@@ -62,6 +62,7 @@ class CharNum {
 
 DIGIT=        [0-9]
 WHITESPACE=   [\040\t]
+LEGAL_STRING = ([^\n\"\\]|([\\][nt?'\"\\]))
 
 %implements java_cup.runtime.Scanner
 %function next_token
@@ -151,7 +152,8 @@ return new Symbol(sym.EOF);
 	   // INSERT CODE HERE TO CHECK FOR BAD VALUE -- SEE ERRORS AND WARNINGS BELOW
 	      if(d>Integer.MAX_VALUE){
 			val = Integer.MAX_VALUE ;//2^31-1
-			ErrMsg.warn(yyline+1, CharNum.num, "integer literal too large; using max value");		          }else
+			ErrMsg.warn(yyline+1, CharNum.num, "integer literal too large; using max value");		         
+              }else
 		        val = (new Integer(yytext())).intValue();
 
             Symbol S = new Symbol(sym.INTLITERAL,
@@ -160,22 +162,30 @@ return new Symbol(sym.EOF);
             return S;
           }
 
-[\"]([^\"\n]*[^\"\n])*
-	{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
-
-[\"][^\"]*([\\][^nt'\"\?\\])+[^\"]*[\"]
+[\"]{LEGAL_STRING}*[\"]
+	 { // good string literal
+	  	  String val = yytext();
+	  	  Symbol S = new Symbol(sym.STRINGLITERAL, new StrLitTokenVal(yyline+1, CharNum.num, val));
+	  	  CharNum.num += yytext().length();
+		  return S;
+	  }
+[\"][^\n\"]*[\"]
        {// bad type I: includes bad "escape" character
+       	   // for if it is not a good terminated string, it's bad
        	    ErrMsg.fatal(yyline+1, CharNum.num,
             "string literal with bad escaped character ignored" + yytext());
             CharNum.num += yytext().length();
        }
 
+[\"]{LEGAL_STRING}*
+	{// unterminated string
+	 //[\"]([^\n\"\\]|([\\][nt'\"?\\]))*([^\n\"\\]|[\\][nt'\"?\\])
+	    ErrMsg.fatal(yyline+1, CharNum.num,
+            "unterminated string literal ignored" + yytext());
+            CharNum.num += yytext().length();
+	}
 
-[\"][^\"]*([\\][^nt'\"\?\\])+[^\"]
+[\"][^\"\n]*
        { // bad type II: unterminated with bad escape
          // previous: [\"][^\\\"]*[\\](\n)*[\"]
 	  ErrMsg.fatal(yyline+1, CharNum.num,
@@ -183,13 +193,6 @@ return new Symbol(sym.EOF);
             CharNum.num += yytext().length();
        }
 
-[\"](([\\][tn'\"\?\\])|[^\n\\\"])*[\"]
-	 { // good string literal
-	  	  String val = yytext();
-	  	  Symbol S = new Symbol(sym.STRINGLITERAL, new StrLitTokenVal(yyline+1, CharNum.num, val));
-	  	  CharNum.num += yytext().length();
-		  return S;
-	  }
 
 (([/][/])|[#])([^\n])* 
 	 {// Comments, ignore

@@ -1,0 +1,22 @@
+"good string 1"
+"good string 2 with good \n\t  \\ \? ESCAPE \"\'"
+
+"unterminated string 1 
+"unterminated string 2
+"
+"unterminated string 3 \t
+"unterminated string 4 \"\t\?                    
+"unterminated string 5 \"
+
+"terminated and bad string 1 \y\ljdhfjd \t \m ESCAPE \m"
+
+"unterminated string with bad escape 1 \\ \t \\ \ \\"
+"unterminated string with bad escape 2 \\\k\\"
+"unterminated string with bad escape 3 \a \" \u
+
+
+"unterminated string with bad escape 4 \m \r
+
+"unterminated string with bad escape 5\
+
+aaa

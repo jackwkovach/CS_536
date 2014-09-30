@@ -308,20 +308,20 @@ class Yylex implements java_cup.runtime.Scanner {
 		/* 51 */ YY_NO_ANCHOR,
 		/* 52 */ YY_NO_ANCHOR,
 		/* 53 */ YY_NO_ANCHOR,
-		/* 54 */ YY_NOT_ACCEPT,
+		/* 54 */ YY_NO_ANCHOR,
 		/* 55 */ YY_NO_ANCHOR,
 		/* 56 */ YY_NO_ANCHOR,
 		/* 57 */ YY_NO_ANCHOR,
-		/* 58 */ YY_NOT_ACCEPT,
+		/* 58 */ YY_NO_ANCHOR,
 		/* 59 */ YY_NO_ANCHOR,
 		/* 60 */ YY_NO_ANCHOR,
-		/* 61 */ YY_NOT_ACCEPT,
+		/* 61 */ YY_NO_ANCHOR,
 		/* 62 */ YY_NO_ANCHOR,
 		/* 63 */ YY_NO_ANCHOR,
-		/* 64 */ YY_NOT_ACCEPT,
+		/* 64 */ YY_NO_ANCHOR,
 		/* 65 */ YY_NO_ANCHOR,
 		/* 66 */ YY_NO_ANCHOR,
-		/* 67 */ YY_NOT_ACCEPT,
+		/* 67 */ YY_NO_ANCHOR,
 		/* 68 */ YY_NO_ANCHOR,
 		/* 69 */ YY_NO_ANCHOR,
 		/* 70 */ YY_NO_ANCHOR,
@@ -335,7 +335,7 @@ class Yylex implements java_cup.runtime.Scanner {
 		/* 78 */ YY_NO_ANCHOR,
 		/* 79 */ YY_NO_ANCHOR,
 		/* 80 */ YY_NO_ANCHOR,
-		/* 81 */ YY_NOT_ACCEPT,
+		/* 81 */ YY_NO_ANCHOR,
 		/* 82 */ YY_NO_ANCHOR,
 		/* 83 */ YY_NO_ANCHOR,
 		/* 84 */ YY_NO_ANCHOR,
@@ -344,56 +344,35 @@ class Yylex implements java_cup.runtime.Scanner {
 		/* 87 */ YY_NO_ANCHOR,
 		/* 88 */ YY_NO_ANCHOR,
 		/* 89 */ YY_NO_ANCHOR,
-		/* 90 */ YY_NO_ANCHOR,
-		/* 91 */ YY_NO_ANCHOR,
-		/* 92 */ YY_NO_ANCHOR,
-		/* 93 */ YY_NO_ANCHOR,
-		/* 94 */ YY_NO_ANCHOR,
-		/* 95 */ YY_NO_ANCHOR,
-		/* 96 */ YY_NO_ANCHOR,
-		/* 97 */ YY_NO_ANCHOR,
-		/* 98 */ YY_NO_ANCHOR,
-		/* 99 */ YY_NO_ANCHOR,
-		/* 100 */ YY_NO_ANCHOR,
-		/* 101 */ YY_NO_ANCHOR,
-		/* 102 */ YY_NO_ANCHOR,
-		/* 103 */ YY_NO_ANCHOR,
-		/* 104 */ YY_NO_ANCHOR,
-		/* 105 */ YY_NO_ANCHOR
+		/* 90 */ YY_NO_ANCHOR
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
-"44:9,27,22,44:2,24,44:18,27,40,20,26,44:2,41,21,30,31,39,37,33,38,34,25,19:" +
-"10,44,32,35,43,36,21,44,18:26,44,23,44:2,18,44,13,1,15,8,11,12,18,17,4,18:2" +
+"44:9,27,26,44:2,21,44:18,27,40,20,25,44:2,41,23,30,31,39,37,33,38,34,24,19:" +
+"10,44,32,35,43,36,23,44,18:26,44,22,44:2,18,44,13,1,15,8,11,12,18,17,4,18:2" +
 ",3,18,5,2,18:2,9,14,6,10,7,16,18:3,28,42,29,44:2,0:2")[0];
 
-	private int yy_rmap[] = unpackFromString(1,106,
-"0,1,2,3,4,1:2,5,6,7,1:7,8,9,10,11,1,12,13,14,1:11,14:7,1,15,14:4,16,17,18,1" +
-"9,20:2,21,22,23,24,25,26,27,28,29,15,30,31,32,33,34,35,36,37,38,39,40,41,42" +
-",43,44,32,45,31,46,47,48,49,50,51,52,53,54,55,56,57,58,59,14,60,61,62,63,64" +
-",65,66,67")[0];
+	private int yy_rmap[] = unpackFromString(1,91,
+"0,1,2,3,4,1,5,6,1,7,1:7,8,9,10,11,1,12,13,14,1,15,1:10,14:2,16,14:9,17,18,1" +
+"6,19,20,1,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42" +
+",43,44,45,46,47,14,48,49,50,51,52,53,54,55")[0];
 
-	private int yy_nxt[][] = unpackFromString(68,45,
-"1,2,97:2,50,97,99,100,97,101,97,102,103,97,104,78,105,97:2,3,4,5,6,5,-1,7,8" +
-",9,10,11,12,13,14,15,16,17,18,19,20,21,22,52,57,23,5,-1:46,97,83,97:17,-1:4" +
-"4,3,-1:26,4:19,25,4,49,51,4:21,-1:25,8,-1:20,8:21,-1,8:22,-1:27,9,-1:52,26," +
-"-1:7,27,-1:37,28,-1:6,29,-1:38,30,-1:45,31,-1:49,32,-1:44,35,-1:2,97:19,-1:" +
-"26,64:19,43,64:2,67,64:21,-1,49:19,-1,49:2,81,49:21,-1,97:4,55,97:6,24,97:7" +
-",-1:26,56:4,4:2,56:13,54,4,58,79,56:21,-1:41,33,-1:4,54:19,25,54,-1,61,54:2" +
-"1,-1,97:5,36,97:13,-1:26,60:19,43,60,44,63,60:21,-1:42,34,-1:3,44:19,43,44:" +
-"2,80,44:21,-1,97:4,37,97:14,-1:26,60:19,43,60,64,63,60:21,-1:5,54:2,-1:13,5" +
-"4:2,-1,54,-1:22,97:2,38,97:16,-1:26,56:4,60:2,56:13,43,60,58,63,56:21,-1,97" +
-":10,39,97:8,-1:26,69:19,43,69,44,71,69:21,-1,58:4,64:2,58:13,43,64,58,67,58" +
-":21,-1,97:7,40,97:11,-1:26,69:19,43,69,64,71,69:21,-1,97:10,41,97:8,-1:26,5" +
-"6:4,69:2,56:13,53,69,58,73,56:21,-1,97:5,42,97:13,-1:26,82:4,69:2,82:13,43," +
-"69,58,71,82:21,-1,97:10,45,97:8,-1:26,97:10,46,97:8,-1:26,97:4,47,97:14,-1:" +
-"26,97:5,48,97:13,-1:26,97,90,97,59,97:15,-1:26,66:4,4:2,66:13,25,4,58,51,66" +
-":21,-1,58:4,49:2,58:13,-1,49,58,81,58:21,-1,97,62,97:17,-1:26,97:9,65,97:9," +
-"-1:26,97:3,68,97:15,-1:26,97:5,92,97:13,-1:26,97:13,70,97:5,-1:26,97:2,93,9" +
-"7:16,-1:26,97:8,98,97:10,-1:26,97:9,72,97:9,-1:26,97:3,94,97:15,-1:26,97:9," +
-"95,97:9,-1:26,97:13,74,97:5,-1:26,97:2,75,97:16,-1:26,97:8,76,97:10,-1:26,9" +
-"7:14,77,97:4,-1:26,97:9,96,97:9,-1:26,97:8,84,97:10,-1:26,97,85,97:17,-1:26" +
-",97:10,86,97:8,-1:26,97:2,87,97:16,-1:26,97:12,88,97:6,-1:26,97:5,89,97:13," +
-"-1:26,97:16,91,97:2,-1:25");
+	private int yy_nxt[][] = unpackFromString(56,45,
+"1,2,82:2,50,82,84,85,82,86,82,87,88,82,89,67,90,82:2,3,4,-1,5:2,6,7,8,9,10," +
+"11,12,13,14,15,16,17,18,19,20,21,22,52,56,23,5,-1:46,82,68,82:17,-1:44,3,-1" +
+":26,4:19,25,4,26,4:3,-1,4:18,-1:24,7,-1:21,7:25,-1,7:18,-1:27,9,-1:52,27,-1" +
+":7,28,-1:37,29,-1:6,30,-1:38,31,-1:45,32,-1:49,33,-1:44,36,-1:2,82:19,-1:26" +
+",53:4,4:2,53:13,39,53,4:2,53:2,-1,53:18,-1,51:19,25,51,49,51:3,-1,51:18,-1:" +
+"5,51:2,-1:13,51,-1,51:2,-1:22,82:4,55,82:6,24,82:7,-1:66,34,-1:4,53:19,54,5" +
+"3:5,-1,53:18,-1,82:5,37,82:13,-1:67,35,-1:3,82:4,38,82:14,-1:26,82:2,40,82:" +
+"16,-1:26,82:10,41,82:8,-1:26,82:7,42,82:11,-1:26,82:10,43,82:8,-1:26,82:5,4" +
+"4,82:13,-1:26,82:10,45,82:8,-1:26,82:10,46,82:8,-1:26,82:4,47,82:14,-1:26,8" +
+"2:5,48,82:13,-1:26,82,75,82,57,82:15,-1:26,82,58,82:17,-1:26,82:9,59,82:9,-" +
+"1:26,82:3,60,82:15,-1:26,82:5,77,82:13,-1:26,82:13,61,82:5,-1:26,82:2,78,82" +
+":16,-1:26,82:8,83,82:10,-1:26,82:9,62,82:9,-1:26,82:3,79,82:15,-1:26,82:9,8" +
+"0,82:9,-1:26,82:13,63,82:5,-1:26,82:2,64,82:16,-1:26,82:8,65,82:10,-1:26,82" +
+":14,66,82:4,-1:26,82:9,81,82:9,-1:26,82:8,69,82:10,-1:26,82,70,82:17,-1:26," +
+"82:10,71,82:8,-1:26,82:2,72,82:16,-1:26,82:12,73,82:6,-1:26,82:5,74,82:13,-" +
+"1:26,82:16,76,82:2,-1:25");
 
 	public java_cup.runtime.Symbol next_token ()
 		throws java.io.IOException {
@@ -461,7 +440,8 @@ return new Symbol(sym.EOF);
 	   // INSERT CODE HERE TO CHECK FOR BAD VALUE -- SEE ERRORS AND WARNINGS BELOW
 	      if(d>Integer.MAX_VALUE){
 			val = Integer.MAX_VALUE ;//2^31-1
-			ErrMsg.warn(yyline+1, CharNum.num, "integer literal too large; using max value");		          }else
+			ErrMsg.warn(yyline+1, CharNum.num, "integer literal too large; using max value");		         
+              }else
 		        val = (new Integer(yytext())).intValue();
             Symbol S = new Symbol(sym.INTLITERAL,
             new IntLitTokenVal(yyline+1, CharNum.num, val));
@@ -472,6 +452,7 @@ return new Symbol(sym.EOF);
 						break;
 					case 4:
 						{// unterminated string
+	 //[\"]([^\n\"\\]|([\\][nt'\"?\\]))*([^\n\"\\]|[\\][nt'\"?\\])
 	    ErrMsg.fatal(yyline+1, CharNum.num,
             "unterminated string literal ignored" + yytext());
             CharNum.num += yytext().length();
@@ -486,20 +467,20 @@ return new Symbol(sym.EOF);
 					case -6:
 						break;
 					case 6:
-						{ CharNum.num = 1; }
-					case -7:
-						break;
-					case 7:
 						{ Symbol S = new Symbol(sym.DIVIDE, new TokenVal(yyline+1, CharNum.num));
             CharNum.num++;
             return S;
 	  }
-					case -8:
+					case -7:
 						break;
-					case 8:
+					case 7:
 						{// Comments, ignore
 	         CharNum.num += yytext().length();
 	 }
+					case -8:
+						break;
+					case 8:
+						{ CharNum.num = 1; }
 					case -9:
 						break;
 					case 9:
@@ -621,139 +602,140 @@ return new Symbol(sym.EOF);
 					case -26:
 						break;
 					case 26:
-						{ Symbol S = new Symbol(sym.WRITE, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-   	  }
-					case -27:
-						break;
-					case 27:
-						{ Symbol S = new Symbol(sym.LESSEQ, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-          }
-					case -28:
-						break;
-					case 28:
-						{ Symbol S = new Symbol(sym.READ, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-   	  }
-					case -29:
-						break;
-					case 29:
-						{ Symbol S = new Symbol(sym.GREATEREQ, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-          }
-					case -30:
-						break;
-					case 30:
-						{ Symbol S = new Symbol(sym.PLUSPLUS, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-   	  }
-					case -31:
-						break;
-					case 31:
-						{ Symbol S = new Symbol(sym.MINUSMINUS, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-   	  }
-					case -32:
-						break;
-					case 32:
-						{ Symbol S = new Symbol(sym.NOTEQUALS, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-          }
-					case -33:
-						break;
-					case 33:
-						{ Symbol S = new Symbol(sym.AND, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-          }
-					case -34:
-						break;
-					case 34:
-						{ Symbol S = new Symbol(sym.OR, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-          }
-					case -35:
-						break;
-					case 35:
-						{ Symbol S = new Symbol(sym.EQUALS, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
-            return S;
-          }
-					case -36:
-						break;
-					case 36:
-						{ Symbol S = new Symbol(sym.INT, new TokenVal(yyline+1, CharNum.num));
-	    CharNum.num += yytext().length();
-            return S;
-	  }
-					case -37:
-						break;
-					case 37:
-						{ Symbol S = new Symbol(sym.CIN, new TokenVal(yyline+1, CharNum.num));
-	    CharNum.num += yytext().length();
-            return S;
-	  }
-					case -38:
-						break;
-					case 38:
-						{ Symbol S = new Symbol(sym.BOOL, new TokenVal(yyline+1, CharNum.num));
-	    CharNum.num += yytext().length();
-            return S;
-	  }
-					case -39:
-						break;
-					case 39:
-						{ Symbol S = new Symbol(sym.TRUE, new TokenVal(yyline+1, CharNum.num));
-	    CharNum.num += yytext().length();
-            return S;
-	  }
-					case -40:
-						break;
-					case 40:
-						{ Symbol S = new Symbol(sym.VOID, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += yytext().length();
-	    return S;
-	  }
-					case -41:
-						break;
-					case 41:
-						{ Symbol S = new Symbol(sym.ELSE, new TokenVal(yyline+1, CharNum.num));
-	    CharNum.num += yytext().length();
-            return S;
-	  }
-					case -42:
-						break;
-					case 42:
-						{ Symbol S = new Symbol(sym.COUT, new TokenVal(yyline+1, CharNum.num));
-	    CharNum.num += yytext().length();
-            return S;
-	  }
-					case -43:
-						break;
-					case 43:
-						{// bad type I: includes bad "escape" character
-       	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "string literal with bad escaped character ignored" + yytext());
-            CharNum.num += yytext().length();
-       }
-					case -44:
-						break;
-					case 44:
 						{ // bad type II: unterminated with bad escape
          // previous: [\"][^\\\"]*[\\](\n)*[\"]
 	  ErrMsg.fatal(yyline+1, CharNum.num,
           "unterminated string literal with bad escaped character ignored" + yytext());
             CharNum.num += yytext().length();
        }
+					case -27:
+						break;
+					case 27:
+						{ Symbol S = new Symbol(sym.WRITE, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+   	  }
+					case -28:
+						break;
+					case 28:
+						{ Symbol S = new Symbol(sym.LESSEQ, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+          }
+					case -29:
+						break;
+					case 29:
+						{ Symbol S = new Symbol(sym.READ, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+   	  }
+					case -30:
+						break;
+					case 30:
+						{ Symbol S = new Symbol(sym.GREATEREQ, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+          }
+					case -31:
+						break;
+					case 31:
+						{ Symbol S = new Symbol(sym.PLUSPLUS, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+   	  }
+					case -32:
+						break;
+					case 32:
+						{ Symbol S = new Symbol(sym.MINUSMINUS, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+   	  }
+					case -33:
+						break;
+					case 33:
+						{ Symbol S = new Symbol(sym.NOTEQUALS, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+          }
+					case -34:
+						break;
+					case 34:
+						{ Symbol S = new Symbol(sym.AND, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+          }
+					case -35:
+						break;
+					case 35:
+						{ Symbol S = new Symbol(sym.OR, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+          }
+					case -36:
+						break;
+					case 36:
+						{ Symbol S = new Symbol(sym.EQUALS, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += 2;
+            return S;
+          }
+					case -37:
+						break;
+					case 37:
+						{ Symbol S = new Symbol(sym.INT, new TokenVal(yyline+1, CharNum.num));
+	    CharNum.num += yytext().length();
+            return S;
+	  }
+					case -38:
+						break;
+					case 38:
+						{ Symbol S = new Symbol(sym.CIN, new TokenVal(yyline+1, CharNum.num));
+	    CharNum.num += yytext().length();
+            return S;
+	  }
+					case -39:
+						break;
+					case 39:
+						{// bad type I: includes bad "escape" character
+       	   // for if it is not a good terminated string, it's bad
+       	    ErrMsg.fatal(yyline+1, CharNum.num,
+            "string literal with bad escaped character ignored" + yytext());
+            CharNum.num += yytext().length();
+       }
+					case -40:
+						break;
+					case 40:
+						{ Symbol S = new Symbol(sym.BOOL, new TokenVal(yyline+1, CharNum.num));
+	    CharNum.num += yytext().length();
+            return S;
+	  }
+					case -41:
+						break;
+					case 41:
+						{ Symbol S = new Symbol(sym.TRUE, new TokenVal(yyline+1, CharNum.num));
+	    CharNum.num += yytext().length();
+            return S;
+	  }
+					case -42:
+						break;
+					case 42:
+						{ Symbol S = new Symbol(sym.VOID, new TokenVal(yyline+1, CharNum.num));
+            CharNum.num += yytext().length();
+	    return S;
+	  }
+					case -43:
+						break;
+					case 43:
+						{ Symbol S = new Symbol(sym.ELSE, new TokenVal(yyline+1, CharNum.num));
+	    CharNum.num += yytext().length();
+            return S;
+	  }
+					case -44:
+						break;
+					case 44:
+						{ Symbol S = new Symbol(sym.COUT, new TokenVal(yyline+1, CharNum.num));
+	    CharNum.num += yytext().length();
+            return S;
+	  }
 					case -45:
 						break;
 					case 45:
@@ -794,6 +776,7 @@ return new Symbol(sym.EOF);
 						break;
 					case 51:
 						{// unterminated string
+	 //[\"]([^\n\"\\]|([\\][nt'\"?\\]))*([^\n\"\\]|[\\][nt'\"?\\])
 	    ErrMsg.fatal(yyline+1, CharNum.num,
             "unterminated string literal ignored" + yytext());
             CharNum.num += yytext().length();
@@ -808,12 +791,22 @@ return new Symbol(sym.EOF);
 					case -52:
 						break;
 					case 53:
+						{ // bad type II: unterminated with bad escape
+         // previous: [\"][^\\\"]*[\\](\n)*[\"]
+	  ErrMsg.fatal(yyline+1, CharNum.num,
+          "unterminated string literal with bad escaped character ignored" + yytext());
+            CharNum.num += yytext().length();
+       }
+					case -53:
+						break;
+					case 54:
 						{// bad type I: includes bad "escape" character
+       	   // for if it is not a good terminated string, it's bad
        	    ErrMsg.fatal(yyline+1, CharNum.num,
             "string literal with bad escaped character ignored" + yytext());
             CharNum.num += yytext().length();
        }
-					case -53:
+					case -54:
 						break;
 					case 55:
 						{//    IdTokenVal(int line, int ch, String val)
@@ -821,24 +814,16 @@ return new Symbol(sym.EOF);
 	    CharNum.num += yytext().length();
             return S;
           }
-					case -54:
-						break;
-					case 56:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
 					case -55:
 						break;
-					case 57:
+					case 56:
 						{ ErrMsg.fatal(yyline+1, CharNum.num,
                          "ignoring illegal character: " + yytext());
             CharNum.num++;
           }
 					case -56:
 						break;
-					case 59:
+					case 57:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -846,15 +831,15 @@ return new Symbol(sym.EOF);
           }
 					case -57:
 						break;
-					case 60:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 58:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -58:
 						break;
-					case 62:
+					case 59:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -862,15 +847,15 @@ return new Symbol(sym.EOF);
           }
 					case -59:
 						break;
-					case 63:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 60:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -60:
 						break;
-					case 65:
+					case 61:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -878,15 +863,15 @@ return new Symbol(sym.EOF);
           }
 					case -61:
 						break;
-					case 66:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 62:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -62:
 						break;
-					case 68:
+					case 63:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -894,15 +879,15 @@ return new Symbol(sym.EOF);
           }
 					case -63:
 						break;
-					case 69:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 64:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -64:
 						break;
-					case 70:
+					case 65:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -910,15 +895,15 @@ return new Symbol(sym.EOF);
           }
 					case -65:
 						break;
-					case 71:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 66:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -66:
 						break;
-					case 72:
+					case 67:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -926,15 +911,15 @@ return new Symbol(sym.EOF);
           }
 					case -67:
 						break;
-					case 73:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 68:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -68:
 						break;
-					case 74:
+					case 69:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -942,7 +927,7 @@ return new Symbol(sym.EOF);
           }
 					case -69:
 						break;
-					case 75:
+					case 70:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -950,7 +935,7 @@ return new Symbol(sym.EOF);
           }
 					case -70:
 						break;
-					case 76:
+					case 71:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -958,7 +943,7 @@ return new Symbol(sym.EOF);
           }
 					case -71:
 						break;
-					case 77:
+					case 72:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -966,7 +951,7 @@ return new Symbol(sym.EOF);
           }
 					case -72:
 						break;
-					case 78:
+					case 73:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -974,32 +959,31 @@ return new Symbol(sym.EOF);
           }
 					case -73:
 						break;
-					case 79:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 74:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -74:
 						break;
-					case 80:
-						{ // bad type II: unterminated with bad escape
-         // previous: [\"][^\\\"]*[\\](\n)*[\"]
-	  ErrMsg.fatal(yyline+1, CharNum.num,
-          "unterminated string literal with bad escaped character ignored" + yytext());
-            CharNum.num += yytext().length();
-       }
+					case 75:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -75:
 						break;
-					case 82:
-						{// unterminated string
-	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
-            CharNum.num += yytext().length();
-	}
+					case 76:
+						{//    IdTokenVal(int line, int ch, String val)
+	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
+	    CharNum.num += yytext().length();
+            return S;
+          }
 					case -76:
 						break;
-					case 83:
+					case 77:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1007,7 +991,7 @@ return new Symbol(sym.EOF);
           }
 					case -77:
 						break;
-					case 84:
+					case 78:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1015,7 +999,7 @@ return new Symbol(sym.EOF);
           }
 					case -78:
 						break;
-					case 85:
+					case 79:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1023,7 +1007,7 @@ return new Symbol(sym.EOF);
           }
 					case -79:
 						break;
-					case 86:
+					case 80:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1031,7 +1015,7 @@ return new Symbol(sym.EOF);
           }
 					case -80:
 						break;
-					case 87:
+					case 81:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1039,7 +1023,7 @@ return new Symbol(sym.EOF);
           }
 					case -81:
 						break;
-					case 88:
+					case 82:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1047,7 +1031,7 @@ return new Symbol(sym.EOF);
           }
 					case -82:
 						break;
-					case 89:
+					case 83:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1055,7 +1039,7 @@ return new Symbol(sym.EOF);
           }
 					case -83:
 						break;
-					case 90:
+					case 84:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1063,7 +1047,7 @@ return new Symbol(sym.EOF);
           }
 					case -84:
 						break;
-					case 91:
+					case 85:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1071,7 +1055,7 @@ return new Symbol(sym.EOF);
           }
 					case -85:
 						break;
-					case 92:
+					case 86:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1079,7 +1063,7 @@ return new Symbol(sym.EOF);
           }
 					case -86:
 						break;
-					case 93:
+					case 87:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1087,7 +1071,7 @@ return new Symbol(sym.EOF);
           }
 					case -87:
 						break;
-					case 94:
+					case 88:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1095,7 +1079,7 @@ return new Symbol(sym.EOF);
           }
 					case -88:
 						break;
-					case 95:
+					case 89:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
@@ -1103,85 +1087,13 @@ return new Symbol(sym.EOF);
           }
 					case -89:
 						break;
-					case 96:
+					case 90:
 						{//    IdTokenVal(int line, int ch, String val)
 	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
 	    CharNum.num += yytext().length();
             return S;
           }
 					case -90:
-						break;
-					case 97:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -91:
-						break;
-					case 98:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -92:
-						break;
-					case 99:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -93:
-						break;
-					case 100:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -94:
-						break;
-					case 101:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -95:
-						break;
-					case 102:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -96:
-						break;
-					case 103:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -97:
-						break;
-					case 104:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -98:
-						break;
-					case 105:
-						{//    IdTokenVal(int line, int ch, String val)
-	    Symbol S = new Symbol(sym.ID, new IdTokenVal(yyline+1, CharNum.num, yytext()));
-	    CharNum.num += yytext().length();
-            return S;
-          }
-					case -99:
 						break;
 					default:
 						yy_error(YY_E_INTERNAL,false);
