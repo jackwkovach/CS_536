@@ -1,5 +1,40 @@
-123
+{
+}
+(
+)
+;
+,
+.
+<<
+>>
+++
+--
 +
-x
+-
+*
+/
+!
+&&
+||
+==
+!=
+<
+>
+<=
+>=
+=
 "good string"
-"good string good escape \n \t   \"\\ \' "
+"good string and good escape \n \t   \"\\ \' "
+haha
+mess
+EOF
+just
+unterminated
+string
+not
+a
+comment
+not
+a
+comment
+2

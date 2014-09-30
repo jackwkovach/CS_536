@@ -29,16 +29,13 @@ sym.class: sym.java
 
 ErrMsg.class: ErrMsg.java
 	$(JC) $(FLAGS) ErrMsg.java
-
-	
 ###
 # testing - add more here to run your tester and compare its results
 # to expected results
 ###
 test:
-	java P2 
-	diff allTokens.in allTokens.out
-
+	java -cp ~cs536-1/public/tools/deps:. P2 allTokens.in
+#	diff -c allTokens.in allTokens.out
 ###
 # clean up
 ###

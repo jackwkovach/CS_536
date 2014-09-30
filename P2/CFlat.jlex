@@ -17,6 +17,10 @@ class TokenVal {
         linenum = line;
         charnum = ch;
     }
+
+    public String toString(){
+    	   return new String("Line:" + linenum +" CharNumber:" + charnum);
+    }
 }
 
 class IntLitTokenVal extends TokenVal {
@@ -156,22 +160,24 @@ return new Symbol(sym.EOF);
             return S;
           }
 
-([\n]*[\"])([^\"\n]*[^\"\n])*
+[\"]([^\"\n]*[^\"\n])*
 	{// unterminated string
 	    ErrMsg.fatal(yyline+1, CharNum.num,
             "unterminated string literal ignored" + yytext());
             CharNum.num += yytext().length();
 	}
 
-[\"][^\"]*([\\][^nt'\"\?\\])+[^\"]*[\"] 
+[\"][^\"]*([\\][^nt'\"\?\\])+[^\"]*[\"]
        {// bad type I: includes bad "escape" character
        	    ErrMsg.fatal(yyline+1, CharNum.num,
             "string literal with bad escaped character ignored" + yytext());
             CharNum.num += yytext().length();
        }
 
-[\"][^\\\"]*[\\](\n)*[\"]
-       { // bad type II: unterminated \
+
+[\"][^\"]*([\\][^nt'\"\?\\])+[^\"]
+       { // bad type II: unterminated with bad escape
+         // previous: [\"][^\\\"]*[\\](\n)*[\"]
 	  ErrMsg.fatal(yyline+1, CharNum.num,
           "unterminated string literal with bad escaped character ignored" + yytext());
             CharNum.num += yytext().length();
