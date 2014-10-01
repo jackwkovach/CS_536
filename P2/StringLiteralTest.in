@@ -1,4 +1,4 @@
-"good string 1"
+"good string 1!@^&()"
 "good string 2 with good \n\t  \\ \? ESCAPE \"\'"
 
 "unterminated string 1 
@@ -7,16 +7,21 @@
 "unterminated string 3 \t
 "unterminated string 4 \"\t\?                    
 "unterminated string 5 \"
+"ultimate \n\t unterminated \?\' string !!
+actuallyIt'sSimilar"
 
-"terminated and bad string 1 \y\ljdhfjd \t \m ESCAPE \m"
+"terminated string 1 \y\ljdhfjd \t \m with bad ESCAPE \m"
+"terminated string 2 with bad escape 1 \\ \t \\ \ \\"
+"terminated string with bad escape 1 \\\k\\\""
 
-"unterminated string with bad escape 1 \\ \t \\ \ \\"
-"unterminated string with bad escape 2 \\\k\\"
-"unterminated string with bad escape 3 \a \" \u
+"unterminated string with bad escape 1 \\\k\\\"
+"unterminated\nstring with bad escape 2 \"\l\"
+"unterminated string with bad escape 2 \a \" \u
 
 
-"unterminated string with bad escape 4 \m \r
 
-"unterminated string with bad escape 5\
+"unterminated string with bad escape 3 \m \r
+
+"unterminated string with bad escape 4\
 
 aaa

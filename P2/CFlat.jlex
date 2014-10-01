@@ -169,30 +169,29 @@ return new Symbol(sym.EOF);
 	  	  CharNum.num += yytext().length();
 		  return S;
 	  }
-[\"][^\n\"]*[\"]
-       {// bad type I: includes bad "escape" character
-       	   // for if it is not a good terminated string, it's bad
-       	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "string literal with bad escaped character ignored" + yytext());
-            CharNum.num += yytext().length();
-       }
 
 [\"]{LEGAL_STRING}*
 	{// unterminated string
-	 //[\"]([^\n\"\\]|([\\][nt'\"?\\]))*([^\n\"\\]|[\\][nt'\"?\\])
 	    ErrMsg.fatal(yyline+1, CharNum.num,
-            "unterminated string literal ignored" + yytext());
+            "unterminated string literal ignored " + yytext());
             CharNum.num += yytext().length();
 	}
 
-[\"][^\"\n]*
-       { // bad type II: unterminated with bad escape
-         // previous: [\"][^\\\"]*[\\](\n)*[\"]
-	  ErrMsg.fatal(yyline+1, CharNum.num,
-          "unterminated string literal with bad escaped character ignored" + yytext());
+[\"]({LEGAL_STRING}*([^\n\"\\]|[\\][^nt\"'?\\])+{LEGAL_STRING}*)*[\"]
+       {// bad type I: includes bad "escape" character
+       	   // for if it is not a good terminated string, it's bad
+       	    ErrMsg.fatal(yyline+1, CharNum.num,
+            "string literal with bad escaped character ignored " + yytext());
             CharNum.num += yytext().length();
        }
 
+[\"]({LEGAL_STRING}*([^\n\"\\]|[\\][^nt\"'?\\])+{LEGAL_STRING}*)*
+       { // bad type II: unterminated with bad escape
+         // previous: [\"][^\\\"]*[\\](\n)*[\"]
+	  ErrMsg.fatal(yyline+1, CharNum.num,
+          "unterminated string literal with bad escaped character ignored " + yytext());
+            CharNum.num += yytext().length();
+       }
 
 (([/][/])|[#])([^\n])* 
 	 {// Comments, ignore
