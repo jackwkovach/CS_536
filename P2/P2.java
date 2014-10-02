@@ -55,6 +55,9 @@ public class P2 {
 
     private static void testID(String fin, String fout) throws IOException {
         // open input and output files
+	System.out.println("============================================");
+	System.out.println("+             Test ID Cases                +");
+	System.out.println("============================================");
         FileReader inFile = null;
         PrintWriter outFile = null;
         try {
@@ -85,6 +88,10 @@ public class P2 {
 
     private static void testIntegerLiteral(String fin, String fout) throws IOException {
         // open input and output files
+	System.out.println("============================================");
+	System.out.println("+        Test Integer Literal Cases        +");
+	System.out.println("============================================");
+
         FileReader inFile = null;
         PrintWriter outFile = null;
         try {
@@ -115,6 +122,10 @@ public class P2 {
 
     private static void testStringLiteral(String fin, String fout) throws IOException {
         // open input and output files
+	System.out.println("============================================");
+	System.out.println("+        Test String Literal Cases         +");
+	System.out.println("============================================");
+
         FileReader inFile = null;
         PrintWriter outFile = null;
         try {
@@ -371,8 +382,8 @@ public class P2 {
 	    int tokenLine = ((TokenVal)token.value).linenum;
 	    int tokenCharnum = ((TokenVal)token.value).charnum;
 
-	    System.out.print("*** " + type.toUpperCase()+" ***");
-	    System.out.println("   "+ val+" - "+tokenLine+":"+tokenCharnum);
+	    System.out.print(tokenLine +":"+tokenCharnum + " ***" + type.toUpperCase()+"***");
+	    System.out.println("  content: "+ val);
     }
 
 
