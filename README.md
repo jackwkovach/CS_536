@@ -17,3 +17,11 @@ Or you can compile by yourself: <br/>
 * Edit CFlat.jlex
 * Add test cases
 * Extend P2.java to test
+
+####Project 3
+* Use Java Cup to write a parser for the C Flat. 
+* Files need to change:
+  * CFlat.cup
+  * ast.java
+  * P3.java
+  * test.cf
