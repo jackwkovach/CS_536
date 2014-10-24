@@ -82,6 +82,17 @@ non terminal IdNode           id;
  
 /* NOTE: Add precedence and associativity declarations here */
 
+precedence right ASSIGN;
+
+precedence left OR;
+precedence left AND;
+precedence left DOT;
+
+precedence nonassoc LESS, LESSEQ, GREATER, GREATEREQ, EQUALS, NOTEQUALS;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left NOT; // highest precedence is at the bottom
+
 
 start with program;
 

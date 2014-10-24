@@ -59,7 +59,7 @@ stmt            ::= assignExp SEMICOLON
                 | WHILE LPAREN exp RPAREN LCURLY varDeclList stmtList RCURLY
                 | RETURN exp SEMICOLON
                 | RETURN SEMICOLON
-                | fncall SEMICOLON
+                | Fncall SEMICOLON
                 ;
 
 assignExp       ::= loc ASSIGN exp
