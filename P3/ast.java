@@ -130,7 +130,7 @@ class ProgramNode extends ASTnode {
     }
 
     // 1 kid
-    private DeclListNode myDeclList;
+    private DecListNode myDeclList;
 }
 
 class DeclListNode extends ASTnode {
@@ -272,7 +272,7 @@ class FormalDeclNode extends DeclNode {
 class StructDeclNode extends DeclNode {
     public StructDeclNode(IdNode id, DeclListNode declList) {
         myId = id;
-		myDeclList = declList;
+	myDeclList = declList;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -280,7 +280,7 @@ class StructDeclNode extends DeclNode {
 
     // 2 kids
     private IdNode myId;
-	private DeclListNode myDeclList;
+    private DeclListNode myDeclList;
 }
 
 // **********************************************************************
@@ -317,13 +317,13 @@ class VoidNode extends TypeNode {
 
 class StructNode extends TypeNode {
     public StructNode(IdNode id) {
-		myId = id;
+	myId = id;
     }
 
     public void unparse(PrintWriter p, int indent) {
     }
 	
-	// 1 kid
+    // 1 kid
     private IdNode myId;
 }
 
