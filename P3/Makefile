@@ -8,33 +8,34 @@
 ###
 
 JC = javac
+CP = ~cs536-1/public/tools/deps:.
 
 P3.class: P3.java parser.class Yylex.class ASTnode.class
-	$(JC) -g P3.java
+	$(JC) -g -cp $(CP) P3.java
 
 parser.class: parser.java ASTnode.class Yylex.class ErrMsg.class
-	$(JC) parser.java
+	$(JC) -cp $(CP) parser.java
 
 parser.java: CFlat.cup
-	java java_cup.Main < CFlat.cup
+	java -cp $(CP) java_cup.Main < CFlat.cup
 
 Yylex.class: CFlat.jlex.java sym.class ErrMsg.class
-	$(JC) CFlat.jlex.java
+	$(JC) -cp $(CP) CFlat.jlex.java
 
 ASTnode.class: ast.java
-	$(JC) -g ast.java
+	$(JC) -g -cp $(CP) ast.java
 
 CFlat.jlex.java: CFlat.jlex sym.class
-	java JLex.Main CFlat.jlex
+	java -cp $(CP) JLex.Main CFlat.jlex
 
 sym.class: sym.java
-	$(JC) -g sym.java
+	$(JC) -g -cp $(CP) sym.java
 
 sym.java: CFlat.cup
-	java java_cup.Main < CFlat.cup
+	java -cp $(CP) java_cup.Main < CFlat.cup
 
 ErrMsg.class: ErrMsg.java
-	$(JC) ErrMsg.java
+	$(JC) -cp $(CP) ErrMsg.java
 
 ###
 # clean
