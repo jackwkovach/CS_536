@@ -1,0 +1,41 @@
+int x;
+int y;
+struct a b;
+int f () {
+}
+int f (int b, void c) {
+}
+int k (int a, int b, int c) {
+    int d;
+    int f;
+    struct foo bar;
+}
+struct a {
+    int a;
+    int c;
+    struct foo bar;
+}
+void foo (int b) {
+        a = b;
+        a++;
+        b--;
+        cin >> a;
+        cout << d;
+        if (g > f){
+}
+        if (a < b){
+            int a;
+                g = f;
+}
+if (a == b) {
+            int a;
+                g = f;
+}
+else {
+}
+while (a == b) {
+}
+        a = c - d;
+        b =  + ;
+        c = .;
+}

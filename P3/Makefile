@@ -8,7 +8,7 @@
 ###
 
 JC = javac
-CP = ~cs536-1/public/tools/deps:.
+CP = /u/c/s/cs536-1/public/tools/deps:.
 
 P3.class: P3.java parser.class Yylex.class ASTnode.class
 	$(JC) -g -cp $(CP) P3.java
@@ -36,6 +36,9 @@ sym.java: CFlat.cup
 
 ErrMsg.class: ErrMsg.java
 	$(JC) -cp $(CP) ErrMsg.java
+
+test:
+	java -cp $(CP) P3 test.cf result.out
 
 ###
 # clean

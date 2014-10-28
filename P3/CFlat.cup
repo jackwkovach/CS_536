@@ -73,28 +73,28 @@ terminal                ASSIGN;
  *       add productions to the grammar below.
  */
 
-non terminal ProgramNode               program;
-non terminal LinkedList      		declList;  //LinkedList 
-non terminal DeclNode         		decl;
-non terminal LinkedList		varDeclList;
-non terminal VarDeclNode      		varDecl;
-non terminal FnDeclNode		fnDecl;
-non terminal StructDeclNode	structDecl;
-non terminal LinkedList		structBody;
-non terminal FormalsListNode	formals;
-non terminal LinkedList		formalsList;
-non terminal FormalDeclNode   		formalDecl;
-non terminal FnBodyNode      		fnBody;
-non terminal LinkedList		stmtList;
-non terminal StmtNode  		stmt;
-non terminal AssignNode		assignExp;
-non terminal ExpNode		exp;
-non terminal ExpNode	      	term;
-non terminal CallExpNode    		fncall;
-non terminal LinkedList				actualList;
-non terminal TypeNode  		type;
-non terminal ExpNode   		loc; // 
-non terminal IdNode           	id; // IdNode
+non terminal ProgramNode         program;
+non terminal LinkedList      	 declList;  //LinkedList 
+non terminal DeclNode         	 decl;
+non terminal LinkedList		 varDeclList;
+non terminal VarDeclNode      	 varDecl;
+non terminal FnDeclNode		 fnDecl;
+non terminal StructDeclNode	 structDecl;
+non terminal LinkedList		 structBody;
+non terminal FormalsListNode	 formals;
+non terminal LinkedList		 formalsList;
+non terminal FormalDeclNode   	 formalDecl;
+non terminal FnBodyNode      	 fnBody;
+non terminal LinkedList		 stmtList;
+non terminal StmtNode  		 stmt;
+non terminal AssignNode		 assignExp;
+non terminal ExpNode		 exp;
+non terminal ExpNode	      	 term;
+non terminal CallExpNode    	 fncall;
+non terminal LinkedList		 actualList;
+non terminal TypeNode  		 type;
+non terminal ExpNode   		 loc; // 
+non terminal IdNode           	 id; // IdNode
  
  
 /* NOTE: Add precedence and associativity declarations here */
@@ -154,7 +154,7 @@ varDeclList     ::= varDeclList:vl varDecl:v
 		  vl.addLast(v);
 		  RESULT = vl;
 		:}
-		|		
+		| 
  		{:
 		  RESULT = new LinkedList<DeclNode>();		  
 		:}
@@ -164,6 +164,10 @@ varDecl         ::= type:t id:i SEMICOLON
                 {:
 		  RESULT = new VarDeclNode(t, i, -1);
                 :}
+		| STRUCT id:i1 id:i2 SEMICOLON
+		{:
+		  RESULT = new VarDeclNode(new StructNode(i1), i2, 1); // not -1 indicates it is a struct node
+		:}
                 ;
 
 fnDecl		::= type:t id:i formals:f fnBody:fb
@@ -193,7 +197,7 @@ structBody      ::= structBody:sb varDecl:v
                 
 formals         ::= LPAREN RPAREN
 		{:
-		  // nothing, leave it empty
+		  RESULT = new FormalsListNode(new LinkedList<FormalDeclNode>());
 		:} 
                 | LPAREN formalsList:fl RPAREN
 		{:
@@ -204,12 +208,12 @@ formals         ::= LPAREN RPAREN
 formalsList     ::= formalDecl:fdl
 		{:
 		  LinkedList<FormalDeclNode> l = new LinkedList<FormalDeclNode>();
-		  l.addLast(fdl);
+		  l.addFirst(fdl);
 		  RESULT = l;
 		:} 
                 | formalDecl:fd COMMA formalsList:fl
 		{:
-		  fl.addLast(fd);
+		  fl.addFirst(fd);
 		  RESULT = fl;
 		:} 
                 ;
@@ -281,7 +285,7 @@ stmt            ::= assignExp:ae SEMICOLON
 		:} 
                 | RETURN SEMICOLON
 		{:
-		  // no return value?
+		//  RESULT = new CallStmtNode();
 		:} 
                 | fncall:fc SEMICOLON
 		{:
