@@ -285,7 +285,7 @@ stmt            ::= assignExp:ae SEMICOLON
 		:} 
                 | RETURN SEMICOLON
 		{:
-		//  RESULT = new CallStmtNode();
+		  RESULT = new ReturnStmtNode(null);
 		:} 
                 | fncall:fc SEMICOLON
 		{:
@@ -388,6 +388,7 @@ term            ::= loc: l
 		:} 
                 | LPAREN exp:e RPAREN
 		{:
+		  e.hasParen = true;
 		  RESULT = e;
 		:} 
                 | fncall:fc
@@ -409,13 +410,13 @@ fncall          ::=  id:i LPAREN RPAREN   // fn call with no args
 actualList      ::= exp:e
 		{:
 		  LinkedList<ExpNode> l = new LinkedList<ExpNode>();
-		  l.add(e);
+		  l.addLast(e);
 		  RESULT = l;
 		:} 
                 | actualList:al COMMA exp:e
 		{:
-		  // how to add e to a private list
 		  al.addLast(e);
+		  RESULT = al;
 		:} 
                 ;
 

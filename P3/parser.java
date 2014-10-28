@@ -940,7 +940,7 @@ class CUP$parser$actions {
             {
               StmtNode RESULT =null;
 		
-		//  RESULT = new CallStmtNode();
+		  RESULT = new ReturnStmtNode(null);
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("stmt",13, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1316,6 +1316,7 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		ExpNode e = (ExpNode)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
+		  e.hasParen = true;
 		  RESULT = e;
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("term",16, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1376,7 +1377,7 @@ class CUP$parser$actions {
 		ExpNode e = (ExpNode)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
 		  LinkedList<ExpNode> l = new LinkedList<ExpNode>();
-		  l.add(e);
+		  l.addLast(e);
 		  RESULT = l;
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("actualList",18, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1394,8 +1395,8 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ExpNode e = (ExpNode)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-		  // how to add e to a private list
 		  al.addLast(e);
+		  RESULT = al;
 		
               CUP$parser$result = parser.getSymbolFactory().newSymbol("actualList",18, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

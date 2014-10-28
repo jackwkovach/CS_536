@@ -1,41 +1,72 @@
-int x;
-int y;
-struct a b;
-int f () {
-}
-int f (int b, void c) {
-}
-int k (int a, int b, int c) {
-    int d;
-    int f;
-    struct foo bar;
-}
 struct a {
     int a;
     int c;
     struct foo bar;
+};
+int x;
+int y;
+int z;
+struct a b;
+int f() {
 }
-void foo (int b) {
-        a = b;
-        a++;
-        b--;
-        cin >> a;
-        cout << d;
-        if (g > f){
+
+int f(int b, void c) {
 }
-        if (a < b){
-            int a;
-                g = f;
+
+int k() {
+    int d;
+    int f;
+    struct foo bar;
 }
-if (a == b) {
-            int a;
-                g = f;
+
+void foo(int b) {
+    int a;
+    void c;
+    bool b;
+    a = b;
+    a = ((c - d) + m);
+    b = (((p + 3)) - ((7 * 2) / ((efo + fff))));
+    f = (4 + (3 * 5));
+    y = ((y * 2) + x);
+    a++;
+    b--;
+    cin >> a;
+    cout << d;
+    f();
+    averylongfunctionheiheihei(a, b, c);
+    if ((g > f)) {
+    }
+    y = true;
+    k = "aaaa string! \n \t\"\\";
+    while ((a == (b))) {
+    }
+    a = ((((a && b) || ((!o - f) && !o)) || (y == (true))) || (k == ("aaabb")));
+    a = -d;
+    f = !o;
+    if ((a < b)) {
+        int a;
+        g = f;
+        if ((a < b)) {
+            if ((b > c)) {
+                while (c) {
+                }
+            }
+            else {
+                while ((9 > a)) {
+                }
+            }
+        }
+    }
+    if ((a == (b))) {
+        int a;
+        g = (f + "aa");
+        g = "aa";
+    }
+    else {
+        void q;
+    }
+    c = d.g;
+    return a;
+    return ;
 }
-else {
-}
-while (a == b) {
-}
-        a = c - d;
-        b =  + ;
-        c = .;
-}
+

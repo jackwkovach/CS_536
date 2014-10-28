@@ -1,52 +1,90 @@
-int x; // varDecl: type id SEMICOLON
-int y;
+#
+# The test cases are not in a right indent on purpose to test
+# if the paser can arrange it right. Comments are test by the way
 
-struct a b; // varDecl: STRUCT id id SEMICOLON
-
-int f(){}  //fnDecl: type id formals fnBody
-int f(int b, void c){}
-int k(int a, int b, int c){ int d; int f; struct foo bar;}
-
-
- struct a{  // structDecl: STRUCT id LCURLY structBody RCURLY SEMICOLON
+# test decl
+# structDecl: STRUCT id LCURLY structBody RCURLY SEMICOLON
+ struct a{  
        int a; int c;
-
        	          struct foo bar;
 		  };
 
+// varDecl: type id SEMICOLON | STRUCT id id SEMICOLON
+int x; 
+int y;
+int z;
+struct a b; 
+
+# fnDecl: type id formals fnBody | 
+int f(){
+
+			} // formals: empty fnbody: empty
+
+int f(int b, void c){} # fnbody: empty
+int k(){ int d; int f; struct foo bar;} # formals: empty
+
+#test a compicated fnDecl
 void foo(int b){ // test all the stmt
+
+     	     	    	     	 # vardeclList
+int a;
+void c;
+bool b;
+// stmtList
+
      a = b;
+     a = c    -d + m;
+     b = (p + 3) - 7 * 2 /(efo + fff); 
+     f = 4 + 3 *5;
+     y = y*2+x;
      a++;
      b--; 
      cin >> a;
      cout << d;
-
+f();
+     averylongfunctionheiheihei(a, b, c);
      if(g > f){}
 
-     if( a < b){
-     	 int a;
-	 g = f;
-      }
+     y = true;
+k = "aaaa string! \n \t\"\\";
+while(a ==b ){}
+a = a && b || !o - f && !o || y == true || k == "aaabb";
+
+
+a = -d;
+f = !o;
+     if( a < b){	 int a; g = f;
+
+     if(a<b){
+	if(b > c){while(c){}}
+else{while(9 > a){}}
+     }
+
+
+
+     }
+
 
       if( a == b){
       	  int a;
-	  g = f;
+	  g = f + "aa";
+g = "aa"; 
       }     
-else{}
+      else{ 
+      	    void q;
+      }
 
-while(a ==b ){}
 
-a = c-d;
-b = f +p + 3; // int lit
+
+
 
 // test all kinds of strings
 
-// test dot access
-c = d.g;
-//return a;
+c = d.g; // test dot access
+return a;
+return ;
 
-// return ;
-//f();
-//f(b,c);
 
 }
+
+
