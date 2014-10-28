@@ -80,7 +80,7 @@ g = "aa";
 
 // test all kinds of strings
 
-c = d.g; // test dot access
+c = junhan.diao > linjie.diao; // test dot access
 return a;
 return ;
 

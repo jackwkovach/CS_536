@@ -65,8 +65,8 @@ void foo(int b) {
     else {
         void q;
     }
-    c = d.g;
+    c = (junhan.diao > linjie.diao);
     return a;
-    return ;
+    return;
 }
 
