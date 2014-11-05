@@ -26,4 +26,10 @@ Or you can compile by yourself: <br/>
   * P3.java
   * test.cf: the input file to test implementation
 
-## WHERE is the java_cup.main???? WTF?
+####Project 4
+* Modify the Sym class from program 1 (by including some new fields and methods and/or by defining some subclasses).
+* Modify the IdNode class in ast.java (by including a new Sym field and by modifying its unparse method).
+* Write a new main program, P4.java (an extension of P3.java).
+* Modify the ErrMsg class.
+* Update the Makefile used for program 3 to include any new rules needed for program 4.
+* Write two test inputs: nameErrors.cf and test.cf to test your new code.
