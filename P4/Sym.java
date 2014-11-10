@@ -1,20 +1,36 @@
 import java.util.List;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Sym {
     private String type;
-    private List<String> structVars;
+    private HashMap<String, Sym> structVars;
     
     public Sym(String type) {
         this.type = type;
+	structVars = null;
     }
     
     public String getType() {
         return type;
     }
     
+    public void setStructMap(HashMap<String, Sym> h){
+	structVars = h;
+    }
+
+    public HashMap<String,Sym> getStructVars(){
+	return structVars;
+    }
+
+    public void printStructVars(){
+        System.out.print("\nStruct Vars\n");
+	System.out.print(structVars.toString());
+        System.out.println();
+    }
+
     public String toString() {
 	return type;
     }
 
 }
+

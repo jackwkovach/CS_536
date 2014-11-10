@@ -109,6 +109,9 @@ abstract class ASTnode {
     // every subclass must provide an unparse operation
     abstract public void unparse(PrintWriter p, int indent);
 
+    /**
+       This is the method in ASTnode used to check declaration in the Symbol table
+     */
     protected Sym tableCheck(String id, String type, SymTable st){
 	Sym s = null;
 	try{
@@ -184,12 +187,22 @@ class DeclListNode extends ASTnode {
 		DeclNode td = it.next();
 		td.nameAnalyze(st);
 	    }
-	    // when a declList is processed properly, add a new scope to isolate current one
-	    // st.addScope();
 
         } catch (NoSuchElementException ex) {
             dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
         }
+    }
+
+    public HashMap<String, Sym> getStructVars(){
+	HashMap<String, Sym> h = new HashMap<String, Sym>();
+    	Iterator<DeclNode> it = myDecls.iterator();
+    	while(it.hasNext()){
+	    DeclNode td = it.next();
+	    IdNode id = td.getID();
+	    Sym s = id.getSym();
+	    h.put(id.getIDName(), s);
+    	}
+    	return h;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -338,9 +351,10 @@ class ExpListNode extends ASTnode {
 // **********************************************************************
 
 abstract class DeclNode extends ASTnode {
+    protected Sym declSymbol;
+
+    abstract public IdNode getID();
     abstract public void nameAnalyze(SymTable st);
-
-
 }
 
 class VarDeclNode extends DeclNode {
@@ -352,8 +366,34 @@ class VarDeclNode extends DeclNode {
 
     public void nameAnalyze(SymTable st){
 	Sym s; 
-        s = tableCheck(myId.getIDName(), myType.getType(), st);
-	myId.setSym(s);
+	// it is a struct type
+	if(myType.getType().equals("struct")){
+	    // check if the struct type exists
+	    IdNode structID = ((StructNode)myType).getStructNodeID();
+	    s = st.lookupGlobal(structID.getIDName());
+	    if(s == null){// || (s.getType().equals("struct") == false)){
+		dead("Invalid name of struct type");
+	    }
+	    // check if this variable has been multiply declared
+	    tableCheck(myId.getIDName(), myType.getType(), st);
+	    // pass the fields to it for dot access
+	    // s.setStructMap(structID.getSym().getStructVars());
+	    // myId.setSym(s);
+	    // declSymbol = s;
+
+	}else if(myType.getType().equals("void")){
+	    dead("Non-function declared void");
+	}else{
+	//  it is a normal type
+	    s = tableCheck(myId.getIDName(), myType.getType(), st);
+	    myId.setSym(s);
+	    declSymbol = s;
+	}
+
+    }
+
+    public IdNode getID(){
+	return myId;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -388,16 +428,22 @@ class FnDeclNode extends DeclNode {
         Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
 	myId.setSym(s);
 
+	declSymbol = s;
+
 	// check the name use in the formal list
 	myFormalsList.nameAnalyze(st);
 	//debug
-	System.out.print("after process formallist, Symbol Table:");
-	st.print();
+	// System.out.print("after process formallist, Symbol Table:");
+	// st.print();
 	// check the name use in the fnbody
 	myBody.nameAnalyze(st);
 	// debug
-	System.out.print("after process function body, Symbol Table:");
-	st.print();
+	// System.out.print("after process function body, Symbol Table:");
+	// st.print();
+    }
+
+    public IdNode getID(){
+	return myId;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -426,9 +472,24 @@ class FormalDeclNode extends DeclNode {
     }
 
     public void nameAnalyze(SymTable st){
-	String idName = myId.getIDName();
-	Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
-	myId.setSym(s);
+	Sym s; 
+	if(myType.getType().equals("struct")){
+	    // can't pass syntax check
+	}else if(myType.getType().equals("void")){
+	    dead("Non-function declared void");
+	}else{
+	    s = tableCheck(myId.getIDName(), myType.getType(), st);
+	    myId.setSym(s);
+	    declSymbol = s;
+	}
+	// String idName = myId.getIDName();
+	// Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
+	// myId.setSym(s);
+	// declSymbol = s;
+    }
+
+    public IdNode getID(){
+	return myId;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -449,18 +510,28 @@ class StructDeclNode extends DeclNode {
     }
     /** TODO */
     public void nameAnalyze(SymTable st){
-	
+	// check declaration
+	Sym s = tableCheck(myId.getIDName(), "struct", st);
+
+	// add struct fields
+	s.setStructMap(myDeclList.getStructVars());
+	s.printStructVars();
+	// link id to that symbol 
+	myId.setSym(s);
+    }
+
+    public IdNode getID(){
+	return myId;
     }
 
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("struct ");
-		myId.unparse(p, 0);
-		p.println("{");
+	myId.unparse(p, 0);
+	p.println("{");
         myDeclList.unparse(p, indent+4);
         doIndent(p, indent);
         p.println("};\n");
-
     }
 
     // 2 kids
@@ -530,6 +601,10 @@ class StructNode extends TypeNode {
     public String getType(){
 	return "struct";
     }	
+
+    public IdNode getStructNodeID(){
+	return myId;
+    }
 	// 1 kid
     private IdNode myId;
 }
@@ -909,15 +984,16 @@ class IdNode extends ExpNode {
         myLineNum = lineNum;
         myCharNum = charNum;
         myStrVal = strVal;
+	
     }
 
     public void nameAnalyze(SymTable st){
 	mySym = checkUseLocal(myStrVal, st);
     }
 
-
     public void unparse(PrintWriter p, int indent) {
-        p.print(myStrVal + "(" + mySym.getType() + ")");
+        p.print(myStrVal);        
+	//	p.print(myStrVal + "(" + mySym.getType() + ")");
     }
 
     public String getIDName(){
@@ -931,6 +1007,8 @@ class IdNode extends ExpNode {
     public void setSym(Sym s){
 	mySym = s; // set during declaration
     }
+
+
 
     private int myLineNum;
     private int myCharNum;
@@ -946,6 +1024,9 @@ class DotAccessExpNode extends ExpNode {
     }
     
     public void nameAnalyze(SymTable st){
+
+
+
 
     }
 

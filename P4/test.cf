@@ -2,9 +2,25 @@ int global;
 bool b;
 
 
+struct ss{
+       int a;
+       int b;
+       bool c;	   
+};
+
+struct sss{
+       int d;
+       int e;
+       bool f;	   
+};
+
 
 void main(int a, bool b){
      int k;
+
+     # struct declaration
+     struct sss oo;
+#     	         struct sks oo;   # wrong! invalid struct type
      k = -3;
      # test if statement
      # test global variable
@@ -35,4 +51,8 @@ void main(int a, bool b){
 	 	 }
 	    }
      }
+
+
+
+
 }

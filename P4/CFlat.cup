@@ -169,8 +169,7 @@ structBody      ::=  structBody:sb varDecl:vd
                    RESULT = sb;
                 :}
                 | varDecl:vd
-                {: LinkedList<VarDeclNode> list = 
-				                           new LinkedList<VarDeclNode>();
+                {: LinkedList<VarDeclNode> list = new LinkedList<VarDeclNode>();
                    list.addLast(vd);
                    RESULT = list;
                 :}

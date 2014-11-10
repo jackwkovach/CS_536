@@ -1,27 +1,40 @@
-int global(int);
-bool b(bool);
-void main(void)(int a(int), bool b(bool)) {
-    int k(int);
-    k(int) = (-3);
-    if ((global(int) > 0)) {
-        int bb(int);
-        bb(int) = ((global(int) - 3) + k(int));
+int global;
+bool b;
+struct ss{
+    int a;
+    int b;
+    bool c;
+};
+
+struct sss{
+    int d;
+    int e;
+    bool f;
+};
+
+void main(int a, bool b) {
+    int k;
+    struct sss oo;
+    k = (-3);
+    if ((global > 0)) {
+        int bb;
+        bb = ((global - 3) + k);
     }
-    if ((k(int) > 0)) {
-        int k(int);
-        if ((k(int) > 0)) {
-            int k(int);
-            if ((k(int) > 0)) {
-                int k(int);
+    if ((k > 0)) {
+        int k;
+        if ((k > 0)) {
+            int k;
+            if ((k > 0)) {
+                int k;
             }
         }
     }
     else {
-        int elseelse(int);
-        while ((elseelse(int) > 0)) {
-            int kk(int);
-            while ((kk(int) > 0)) {
-                int kk(int);
+        int elseelse;
+        while ((elseelse > 0)) {
+            int kk;
+            while ((kk > 0)) {
+                int kk;
             }
         }
     }
