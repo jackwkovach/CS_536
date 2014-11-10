@@ -1,29 +1,29 @@
-int a;
-bool b;
-int c;
-int add(int c, int d) {
-}
-
-void d(int d, int b) {
-    a--;
-    if ((b < 1)) {
-        int wierd;
-        a--;
-        while ((a > 0)) {
-            a--;
-            while ((b > 0)) {
-                int ccc;
-                ccc++;
-                a--;
+int global(int);
+bool b(bool);
+void main(void)(int a(int), bool b(bool)) {
+    int k(int);
+    k(int) = (-3);
+    if ((global(int) > 0)) {
+        int bb(int);
+        bb(int) = ((global(int) - 3) + k(int));
+    }
+    if ((k(int) > 0)) {
+        int k(int);
+        if ((k(int) > 0)) {
+            int k(int);
+            if ((k(int) > 0)) {
+                int k(int);
             }
         }
     }
-    if ((add > 0)) {
-        int kk;
-        a++;
-    }
     else {
-        a--;
+        int elseelse(int);
+        while ((elseelse(int) > 0)) {
+            int kk(int);
+            while ((kk(int) > 0)) {
+                int kk(int);
+            }
+        }
     }
 }
 

@@ -1,34 +1,38 @@
-int a;
+int global;
 bool b;
-int c;
 
-int add(int c, int d){
 
+
+void main(int a, bool b){
+     int k;
+     k = -3;
+     # test if statement
+     # test global variable
+     if(global > 0){
+     	int bb;
+     # test variable use inside if
+     # test variable use from mixed scopes
+	bb = global - 3 + k;
+     }
+
+     # test if statement
+     # test global variable
+     if(k > 0){
+     	int k; # it's ok, it's in new scope now
+	# try some serious embedded statement ! ! !	
+	if(k > 0){
+	     int k;
+	     if(k > 0){
+	     	  int k;
+	     }
+	}
+     }else{
+     	    int elseelse;
+	    while(elseelse > 0){
+	       int kk;
+	       while(kk > 0){
+		   int kk;
+	 	 }
+	    }
+     }
 }
-void d(int d, int b){
-     a--;
-
-     if( b < 1){
-     	 int wierd;
-	 a--;
-	 while(a > 0){
-	 	 a--;
-		 while( b > 0){
-
-		 int ccc; 
-		 ccc++;
-a--;}
-	 }
-      }
-      
-      if(add> 0){
-      int kk;      
-      a++;
-
-      }else{
-	a--;
-}
-
- #    c = d.i;
-}
-

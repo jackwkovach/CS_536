@@ -109,10 +109,12 @@ abstract class ASTnode {
     // every subclass must provide an unparse operation
     abstract public void unparse(PrintWriter p, int indent);
 
-    protected void tableCheck(String id, String type, SymTable st){
+    protected Sym tableCheck(String id, String type, SymTable st){
+	Sym s = null;
 	try{
-	    Sym s = new Sym(type);
+	    s = new Sym(type);
 	    st.addDecl(id, s);
+
 	}catch(DuplicateSymException e){
 	    // debug
 	    System.out.print("Symbol Table");
@@ -125,7 +127,7 @@ abstract class ASTnode {
 	    st.print();
 	    dead("Error scope in varDeclNode, Symbol Table:");
 	}
-
+	return s;
     }
 
     protected void dead(String msg){
@@ -349,7 +351,9 @@ class VarDeclNode extends DeclNode {
     }
 
     public void nameAnalyze(SymTable st){
-        tableCheck(myId.getIDName(), myType.getType(), st);
+	Sym s; 
+        s = tableCheck(myId.getIDName(), myType.getType(), st);
+	myId.setSym(s);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -381,14 +385,17 @@ class FnDeclNode extends DeclNode {
 
     public void nameAnalyze(SymTable st){
 	// step 1: check if there is already a same name as the function, same as vardecl
-        tableCheck(myId.getIDName(), myType.getType(), st);
+        Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
+	myId.setSym(s);
 
 	// check the name use in the formal list
 	myFormalsList.nameAnalyze(st);
+	//debug
 	System.out.print("after process formallist, Symbol Table:");
 	st.print();
 	// check the name use in the fnbody
 	myBody.nameAnalyze(st);
+	// debug
 	System.out.print("after process function body, Symbol Table:");
 	st.print();
     }
@@ -420,7 +427,8 @@ class FormalDeclNode extends DeclNode {
 
     public void nameAnalyze(SymTable st){
 	String idName = myId.getIDName();
-	tableCheck(myId.getIDName(), myType.getType(), st);
+	Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
+	myId.setSym(s);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -441,7 +449,7 @@ class StructDeclNode extends DeclNode {
     }
     /** TODO */
     public void nameAnalyze(SymTable st){
-
+	
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -457,7 +465,7 @@ class StructDeclNode extends DeclNode {
 
     // 2 kids
     private IdNode myId;
-	private DeclListNode myDeclList;
+    private DeclListNode myDeclList;
 }
 
 // **********************************************************************
@@ -909,7 +917,7 @@ class IdNode extends ExpNode {
 
 
     public void unparse(PrintWriter p, int indent) {
-        p.print(myStrVal);
+        p.print(myStrVal + "(" + mySym.getType() + ")");
     }
 
     public String getIDName(){
