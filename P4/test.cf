@@ -1,6 +1,18 @@
 int global;
 bool b;
 
+struct aa{
+       int a;
+};
+
+struct bb{
+       struct aa b;
+};
+
+struct cc{
+       struct bb c;
+};
+
 
 struct ss{
        int a;
@@ -11,17 +23,25 @@ struct ss{
 struct sss{
        int d;
        int e;
+       int k;
        bool f;	   
 };
 
 
 void main(int a, bool b){
      int k;
-
+     struct sss abc;
      # struct declaration
-     struct sss oo;
+#     struct sss oo;
+#     struct ss ooo;
 #     	         struct sks oo;   # wrong! invalid struct type
      k = -3;
+     
+     k = abc.d;
+
+     #exciting one
+     
+
      # test if statement
      # test global variable
      if(global > 0){

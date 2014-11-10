@@ -1,0 +1,19 @@
+
+struct sss{
+       int d;
+       int e;
+       int k;
+       bool f;	   
+};
+
+struct sk{
+       struct sss oo;
+
+};      
+
+
+void main(int a, bool b){
+
+     struct sk oo;
+     a.b.c = 0;
+}
