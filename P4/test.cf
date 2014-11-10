@@ -2,22 +2,17 @@ int global;
 bool b;
 
 struct aa{
-       int a;
+       int akk;
 };
-
+		
 struct bb{
-       struct aa b;
+       struct aa bkk;
+       int aa;
+       int akk;
 };
 
 struct cc{
-       struct bb c;
-};
-
-
-struct ss{
-       int a;
-       int b;
-       bool c;	   
+       struct bb ckk;
 };
 
 struct sss{
@@ -30,14 +25,19 @@ struct sss{
 
 void main(int a, bool b){
      int k;
+     struct aa his;
      struct sss abc;
-     # struct declaration
+     struct aa lv1;
+     struct bb lv2;
+     struct cc lv3;
+
+    # struct declaration
 #     struct sss oo;
 #     struct ss ooo;
 #     	         struct sks oo;   # wrong! invalid struct type
      k = -3;
-     
-     k = abc.d;
+     k = lv1.akk;
+     k = lv3.ckk.bkk;
 
      #exciting one
      

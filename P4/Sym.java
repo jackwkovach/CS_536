@@ -4,12 +4,23 @@ import java.util.HashMap;
 public class Sym {
     private String type;
     private HashMap<String, Sym> structVars;
+    private boolean isStruct;
+
     
     public Sym(String type) {
         this.type = type;
 	structVars = null;
+	isStruct = false;
     }
     
+    public void setStruct(boolean b){
+	isStruct = b;
+    }
+    
+    public boolean isStruct(){
+	return isStruct;
+    }
+
     public String getType() {
         return type;
     }

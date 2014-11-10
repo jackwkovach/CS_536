@@ -1,0 +1,57 @@
+int global;
+bool b;
+struct aa{
+    int akk;
+};
+
+struct bb{
+    struct aa bkk;
+    int aa;
+    int akk;
+};
+
+struct cc{
+    struct bb ckk;
+};
+
+struct sss{
+    int d;
+    int e;
+    int k;
+    bool f;
+};
+
+void main(int a, bool b) {
+    int k;
+    struct aa his;
+    struct sss abc;
+    struct aa lv1;
+    struct bb lv2;
+    struct cc lv3;
+    k = (-3);
+    k = (lv1).akk;
+    k = ((lv3).ckk).bkk;
+    if ((global > 0)) {
+        int bb;
+        bb = ((global - 3) + k);
+    }
+    if ((k > 0)) {
+        int k;
+        if ((k > 0)) {
+            int k;
+            if ((k > 0)) {
+                int k;
+            }
+        }
+    }
+    else {
+        int elseelse;
+        while ((elseelse > 0)) {
+            int kk;
+            while ((kk > 0)) {
+                int kk;
+            }
+        }
+    }
+}
+
