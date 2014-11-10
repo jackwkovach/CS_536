@@ -50,7 +50,6 @@ k = "aaaa string! \n \t\"\\";
 while(a ==b ){}
 a = a && b || !o - f && !o || y == true || k == "aaabb";
 
-
 a = -d;
 f = !o;
      if( a < b){	 int a; g = f;

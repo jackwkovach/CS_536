@@ -1,7 +1,11 @@
-public class SemSym {
+import java.util.List;
+import java.util.ArrayList;
+
+public class Sym {
     private String type;
+    private List<String> structVars;
     
-    public SemSym(String type) {
+    public Sym(String type) {
         this.type = type;
     }
     
@@ -10,6 +14,7 @@ public class SemSym {
     }
     
     public String toString() {
-        return type;
+	return type;
     }
+
 }

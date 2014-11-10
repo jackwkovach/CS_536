@@ -109,6 +109,30 @@ abstract class ASTnode {
     // every subclass must provide an unparse operation
     abstract public void unparse(PrintWriter p, int indent);
 
+    protected void tableCheck(String id, String type, SymTable st){
+	try{
+	    Sym s = new Sym(type);
+	    st.addDecl(id, s);
+	}catch(DuplicateSymException e){
+	    // debug
+	    System.out.print("Symbol Table");
+	    st.print();
+	    System.err.println("Declaration: "+type + " " + id + ";");
+
+	    dead("Multiply declared identifier");
+	}catch(EmptySymTableException e){
+	    // debug
+	    st.print();
+	    dead("Error scope in varDeclNode, Symbol Table:");
+	}
+
+    }
+
+    protected void dead(String msg){
+	System.err.println(msg);
+	System.exit(-1);
+    }
+
     // this method can be used by the unparse methods to do indenting
     protected void doIndent(PrintWriter p, int indent) {
         for (int k=0; k<indent; k++) p.print(" ");
@@ -123,19 +147,47 @@ abstract class ASTnode {
 class ProgramNode extends ASTnode {
     public ProgramNode(DeclListNode L) {
         myDeclList = L;
+
+	/* initialize a new symbol table start from the program node
+	   IDEA: 
+	   pass an empty from the root (i.e. the program node) to its leaves.
+	   add scope and declaration accordingly and check the declaration at the same time.
+	 */
+	st = new SymTable(); 
+    }
+
+    public void nameAnalyze(){
+	myDeclList.nameAnalyze(st);
+	System.out.println("Name analyze finished");
     }
 
     public void unparse(PrintWriter p, int indent) {
         myDeclList.unparse(p, indent);
     }
 
-    // 1 kid
+    // 2 kids
+    private SymTable st;
     private DeclListNode myDeclList;
 }
 
 class DeclListNode extends ASTnode {
     public DeclListNode(List<DeclNode> S) {
         myDecls = S;
+    }
+
+    public void nameAnalyze(SymTable st){
+	Iterator<DeclNode> it = myDecls.iterator();
+        try {
+            while (it.hasNext()) {
+		DeclNode td = it.next();
+		td.nameAnalyze(st);
+	    }
+	    // when a declList is processed properly, add a new scope to isolate current one
+	    // st.addScope();
+
+        } catch (NoSuchElementException ex) {
+            dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -145,8 +197,7 @@ class DeclListNode extends ASTnode {
                 ((DeclNode)it.next()).unparse(p, indent);
             }
         } catch (NoSuchElementException ex) {
-            System.err.println("unexpected NoSuchElementException in DeclListNode.print");
-            System.exit(-1);
+            dead("unexpected NoSuchElementException in DeclListNode.print");
         }
     }
 
@@ -157,6 +208,21 @@ class DeclListNode extends ASTnode {
 class FormalsListNode extends ASTnode {
     public FormalsListNode(List<FormalDeclNode> S) {
         myFormals = S;
+    }
+
+    public void nameAnalyze(SymTable st){
+	st.addScope(); // add a scope for current function
+	Iterator<FormalDeclNode> it = myFormals.iterator();
+	try {
+            while (it.hasNext()) {
+		FormalDeclNode tf = it.next();
+		tf.nameAnalyze(st);
+	    }
+
+        } catch (NoSuchElementException ex) {
+            dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
+        }
+
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -180,6 +246,20 @@ class FnBodyNode extends ASTnode {
         myStmtList = stmtList;
     }
 
+    public void nameAnalyze(SymTable st){
+	try{
+	    // check declaration
+	    myDeclList.nameAnalyze(st);
+	    // check usage
+	    myStmtList.nameAnalyze(st);
+	    // remove this scope (no need in future)
+	    st.removeScope();
+	}catch(EmptySymTableException e ){
+	    st.print();
+	    dead("Error in Function body, Symbol Table is empty already:");
+	}
+    }
+
     public void unparse(PrintWriter p, int indent) {
         myDeclList.unparse(p, indent);
         myStmtList.unparse(p, indent);
@@ -193,6 +273,19 @@ class FnBodyNode extends ASTnode {
 class StmtListNode extends ASTnode {
     public StmtListNode(List<StmtNode> S) {
         myStmts = S;
+    }
+
+    public void nameAnalyze(SymTable st){
+	Iterator<StmtNode> it = myStmts.iterator();
+	try {
+            while (it.hasNext()) {
+		StmtNode ts = it.next();
+		ts.nameAnalyze(st);
+	    }
+        } catch (NoSuchElementException ex) {
+            dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
+        }
+	
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -209,6 +302,18 @@ class StmtListNode extends ASTnode {
 class ExpListNode extends ASTnode {
     public ExpListNode(List<ExpNode> S) {
         myExps = S;
+    }
+    
+    public void nameAnalyze(SymTable st){
+	Iterator<ExpNode> it = myExps.iterator();
+	try {
+            while (it.hasNext()) {
+		ExpNode te = it.next();
+		te.nameAnalyze(st);
+	    }
+        } catch (NoSuchElementException ex) {
+            dead("unexpected NoSuchElementException in ExpListNode.nameAnalyze");
+        }
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -231,6 +336,9 @@ class ExpListNode extends ASTnode {
 // **********************************************************************
 
 abstract class DeclNode extends ASTnode {
+    abstract public void nameAnalyze(SymTable st);
+
+
 }
 
 class VarDeclNode extends DeclNode {
@@ -238,6 +346,10 @@ class VarDeclNode extends DeclNode {
         myType = type;
         myId = id;
         mySize = size;
+    }
+
+    public void nameAnalyze(SymTable st){
+        tableCheck(myId.getIDName(), myType.getType(), st);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -267,6 +379,20 @@ class FnDeclNode extends DeclNode {
         myBody = body;
     }
 
+    public void nameAnalyze(SymTable st){
+	// step 1: check if there is already a same name as the function, same as vardecl
+        tableCheck(myId.getIDName(), myType.getType(), st);
+
+	// check the name use in the formal list
+	myFormalsList.nameAnalyze(st);
+	System.out.print("after process formallist, Symbol Table:");
+	st.print();
+	// check the name use in the fnbody
+	myBody.nameAnalyze(st);
+	System.out.print("after process function body, Symbol Table:");
+	st.print();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myType.unparse(p, 0);
@@ -292,6 +418,11 @@ class FormalDeclNode extends DeclNode {
         myId = id;
     }
 
+    public void nameAnalyze(SymTable st){
+	String idName = myId.getIDName();
+	tableCheck(myId.getIDName(), myType.getType(), st);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         myType.unparse(p, 0);
         p.print(" ");
@@ -307,6 +438,10 @@ class StructDeclNode extends DeclNode {
     public StructDeclNode(IdNode id, DeclListNode declList) {
         myId = id;
         myDeclList = declList;
+    }
+    /** TODO */
+    public void nameAnalyze(SymTable st){
+
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -330,6 +465,8 @@ class StructDeclNode extends DeclNode {
 // **********************************************************************
 
 abstract class TypeNode extends ASTnode {
+
+    abstract String getType();
 }
 
 class IntNode extends TypeNode {
@@ -339,6 +476,11 @@ class IntNode extends TypeNode {
     public void unparse(PrintWriter p, int indent) {
         p.print("int");
     }
+    
+    public String getType(){
+	return "int";
+    }
+
 }
 
 class BoolNode extends TypeNode {
@@ -347,6 +489,10 @@ class BoolNode extends TypeNode {
 
     public void unparse(PrintWriter p, int indent) {
         p.print("bool");
+    }
+
+    public String getType(){
+	return "bool";
     }
 }
 
@@ -357,18 +503,25 @@ class VoidNode extends TypeNode {
     public void unparse(PrintWriter p, int indent) {
         p.print("void");
     }
+
+    public String getType(){
+	return "void";
+    }
 }
 
 class StructNode extends TypeNode {
     public StructNode(IdNode id) {
-		myId = id;
+	myId = id;
     }
 
     public void unparse(PrintWriter p, int indent) {
         p.print("struct ");
-		myId.unparse(p, 0);
+	myId.unparse(p, 0);
     }
-	
+
+    public String getType(){
+	return "struct";
+    }	
 	// 1 kid
     private IdNode myId;
 }
@@ -378,11 +531,16 @@ class StructNode extends TypeNode {
 // **********************************************************************
 
 abstract class StmtNode extends ASTnode {
+    abstract public void nameAnalyze(SymTable St);
 }
 
 class AssignStmtNode extends StmtNode {
     public AssignStmtNode(AssignNode assign) {
         myAssign = assign;
+    }
+
+    public void nameAnalyze(SymTable st){
+	myAssign.nameAnalyze(st);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -400,6 +558,10 @@ class PostIncStmtNode extends StmtNode {
         myExp = exp;
     }
 
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myExp.unparse(p, 0);
@@ -415,6 +577,10 @@ class PostDecStmtNode extends StmtNode {
         myExp = exp;
     }
 
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myExp.unparse(p, 0);
@@ -428,6 +594,10 @@ class PostDecStmtNode extends StmtNode {
 class ReadStmtNode extends StmtNode {
     public ReadStmtNode(ExpNode e) {
         myExp = e;
+    }
+
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -446,6 +616,10 @@ class WriteStmtNode extends StmtNode {
         myExp = exp;
     }
 
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("cout << ");
@@ -462,6 +636,20 @@ class IfStmtNode extends StmtNode {
         myDeclList = dlist;
         myExp = exp;
         myStmtList = slist;
+    }
+
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+	// add if's scope
+	st.addScope();
+	myDeclList.nameAnalyze(st);
+	myStmtList.nameAnalyze(st);
+	// quit if's scope, invalidate its scope
+	try{
+	    st.removeScope();
+	}catch(EmptySymTableException e){
+	    dead("Error in IfStmtNode, Symbol Table is empty already:");
+	}
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -490,6 +678,29 @@ class IfElseStmtNode extends StmtNode {
         myThenStmtList = slist1;
         myElseDeclList = dlist2;
         myElseStmtList = slist2;
+    }
+
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+	// if's scope
+	st.addScope();
+	myThenDeclList.nameAnalyze(st);
+	myThenStmtList.nameAnalyze(st);
+	try{
+	    st.removeScope();
+	}catch(EmptySymTableException e){
+	    dead("Error in IfElseStmtNode: if, Symbol Table is empty already:");
+	}
+	// else's scope
+	st.addScope();
+	myElseDeclList.nameAnalyze(st);
+	myElseStmtList.nameAnalyze(st);
+	try{
+	    st.removeScope();
+	}catch(EmptySymTableException e){
+	    dead("Error in IfElseStmtNode: else, Symbol Table is empty already:");
+	}
+
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -523,6 +734,20 @@ class WhileStmtNode extends StmtNode {
         myDeclList = dlist;
         myStmtList = slist;
     }
+
+    /**TODO: other situation need handle*/
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+
+	st.addScope();
+	myDeclList.nameAnalyze(st);
+	myStmtList.nameAnalyze(st);
+	try{
+	    st.removeScope();
+	}catch(EmptySymTableException e){
+	    dead("Error in WhileStmtNode: else, Symbol Table is empty already:");
+	}
+    }
 	
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
@@ -546,6 +771,11 @@ class CallStmtNode extends StmtNode {
         myCall = call;
     }
 
+    /**TODO: other situation need handle*/
+    public void nameAnalyze(SymTable st){
+	myCall.nameAnalyze(st); 
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myCall.unparse(p, indent);
@@ -559,6 +789,11 @@ class CallStmtNode extends StmtNode {
 class ReturnStmtNode extends StmtNode {
     public ReturnStmtNode(ExpNode exp) {
         myExp = exp;
+    }
+
+    /**TODO: other situation need handle*/
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -580,6 +815,25 @@ class ReturnStmtNode extends StmtNode {
 // **********************************************************************
 
 abstract class ExpNode extends ASTnode {
+    protected Sym checkUseLocal(String id, SymTable st){
+	Sym s = st.lookupLocal(id);
+	if(s == null){
+	   s =  checkUseGlobal(id,st);
+	}
+	return s;
+    }
+
+    protected Sym checkUseGlobal(String id, SymTable st){
+	Sym s = st.lookupGlobal(id);
+	if(s == null){
+	    dead("Undeclared identifier");
+	}
+	return s;
+    }
+
+    public void nameAnalyze(SymTable st){
+
+    }
 }
 
 class IntLitNode extends ExpNode {
@@ -649,19 +903,42 @@ class IdNode extends ExpNode {
         myStrVal = strVal;
     }
 
+    public void nameAnalyze(SymTable st){
+	mySym = checkUseLocal(myStrVal, st);
+    }
+
+
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
+    }
+
+    public String getIDName(){
+	return myStrVal;
+    }
+
+    public Sym getSym(){
+	return mySym; // called when this id is used
+    }
+
+    public void setSym(Sym s){
+	mySym = s; // set during declaration
     }
 
     private int myLineNum;
     private int myCharNum;
     private String myStrVal;
+    // used for name anaylze
+    private Sym mySym;
 }
 
 class DotAccessExpNode extends ExpNode {
     public DotAccessExpNode(ExpNode loc, IdNode id) {
         myLoc = loc;	
         myId = id;
+    }
+    
+    public void nameAnalyze(SymTable st){
+
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -680,6 +957,11 @@ class AssignNode extends ExpNode {
     public AssignNode(ExpNode lhs, ExpNode exp) {
         myLhs = lhs;
         myExp = exp;
+    }
+
+    public void nameAnalyze(SymTable st){
+	myLhs.nameAnalyze(st);
+	myExp.nameAnalyze(st);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -706,6 +988,14 @@ class CallExpNode extends ExpNode {
         myExpList = new ExpListNode(new LinkedList<ExpNode>());
     }
 
+    public void nameAnalyze(SymTable st){
+	// check the use of the function name itself
+	// need check global as it is 
+	checkUseGlobal(myId.getIDName(), st);
+	// check the use of all the arguments this function calls
+	myExpList.nameAnalyze(st);
+    }
+
     // ** unparse **
     public void unparse(PrintWriter p, int indent) {
 	    myId.unparse(p, 0);
@@ -725,6 +1015,9 @@ abstract class UnaryExpNode extends ExpNode {
     public UnaryExpNode(ExpNode exp) {
         myExp = exp;
     }
+    public void nameAnalyze(SymTable st){
+	myExp.nameAnalyze(st);
+    }
 
     // one child
     protected ExpNode myExp;
@@ -734,6 +1027,10 @@ abstract class BinaryExpNode extends ExpNode {
     public BinaryExpNode(ExpNode exp1, ExpNode exp2) {
         myExp1 = exp1;
         myExp2 = exp2;
+    }
+    public void nameAnalyze(SymTable st){
+	myExp1.nameAnalyze(st);
+	myExp2.nameAnalyze(st);
     }
 
     // two kids

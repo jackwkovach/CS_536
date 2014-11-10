@@ -1,14 +1,14 @@
 import java.util.*;
 
 public class SymTable {
-    private List<HashMap<String, SemSym>> list;
+    private List<HashMap<String, Sym>> list;
     
     public SymTable() {
-        list = new LinkedList<HashMap<String, SemSym>>();
-        list.add(new HashMap<String, SemSym>());
+        list = new LinkedList<HashMap<String, Sym>>();
+        list.add(new HashMap<String, Sym>());
     }
     
-    public void addDecl(String name, SemSym sym) 
+    public void addDecl(String name, Sym sym) 
     throws DuplicateSymException, EmptySymTableException {
         if (name == null || sym == null)
             throw new NullPointerException();
@@ -16,7 +16,7 @@ public class SymTable {
         if (list.isEmpty())
             throw new EmptySymTableException();
         
-        HashMap<String, SemSym> symTab = list.get(0);
+        HashMap<String, Sym> symTab = list.get(0);
         if (symTab.containsKey(name))
             throw new DuplicateSymException();
         
@@ -24,23 +24,23 @@ public class SymTable {
     }
     
     public void addScope() {
-        list.add(0, new HashMap<String, SemSym>());
+        list.add(0, new HashMap<String, Sym>());
     }
     
-    public SemSym lookupLocal(String name) {
+    public Sym lookupLocal(String name) {
         if (list.isEmpty())
             return null;
         
-        HashMap<String, SemSym> symTab = list.get(0); 
+        HashMap<String, Sym> symTab = list.get(0); 
         return symTab.get(name);
     }
     
-    public SemSym lookupGlobal(String name) {
+    public Sym lookupGlobal(String name) {
         if (list.isEmpty())
             return null;
         
-        for (HashMap<String, SemSym> symTab : list) {
-            SemSym sym = symTab.get(name);
+        for (HashMap<String, Sym> symTab : list) {
+            Sym sym = symTab.get(name);
             if (sym != null)
                 return sym;
         }
@@ -55,7 +55,7 @@ public class SymTable {
     
     public void print() {
         System.out.print("\nSym Table\n");
-        for (HashMap<String, SemSym> symTab : list) {
+        for (HashMap<String, Sym> symTab : list) {
             System.out.println(symTab.toString());
         }
         System.out.println();
