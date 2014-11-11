@@ -1,73 +1,83 @@
 int global;
 bool b;
 
-struct aa{
-       int aai;
-};
-		
-struct bb{
-       struct aa aas;
-       int aa;
-       int akk;
+struct point{
+       int x;
+       int y;
 };
 
-struct cc{
-       struct bb bbs;
-       int l;
+struct plane{
+       struct point p;
+       int z;
 };
 
-struct sss{
-       int d;
-       int e;
-       int k;
-       bool f;	   
+struct space{
+       struct plane pl;
+       int space;
 };
 
+bool funcTest(int a, int b, bool c, int d ){
 
-void main(int a, bool b){
+}
+
+void main(int a){
+
+     #try same names
+     int global;
+     bool bb;
      int k;
-     int cc;   # this won't corrupt with struct cc declaration!!! 
-     struct aa his;
-     struct sss abc;
-     struct aa lv1;
-     struct bb lv2;
-     struct cc lv3;
-     int aa;
+     int space;   # this won't corrupt with struct cc declaration!!! 
+     struct point p;
+     struct plane pl;
+     struct space s;
+#    struct sks oo;   # wrong! invalid struct type
 
-    # struct declaration
-#     struct sss oo;
-#     struct ss ooo;
-#     	         struct sks oo;   # wrong! invalid struct type
-     k = -3;
-     k = lv1.aai;
-     k = lv3.bbs.aas;
+     # Dot Access
+     space = p.x;
+     space = pl.p > s.pl.p;
+     space = s.pl.p.x;
+     p.x = 9;
+     
+     # test expNode
+     space = p.x + pl.p.x;
+     space = p.x - pl.p.x;
+     space = p.x * pl.p.x;
+     space = p.x / pl.p.x;
+     space = -3;  
+     space = true;
+     space = false;
+     space = "hello";	
+     space = !p;
+     space = -p;
 
-     #exciting one
- 
+     cout<<space;
+     cin >> space;
      # test if statement
      # test global variable
-     if(global > 0){
-     	int bb;
-	struct bb lvlv;
+
+    if(p.x > pl.p.x){
+    	int bb;
+	struct space inside;
      # test variable use inside if
      # test variable use from mixed scopes
-	bb = global - 3 + k;
-	k = lv2.aas;
-     }
-
+	bb = global - 3 ;
+	bb = inside.pl.p;
+    }
      # test if statement
      # test global variable
-     if(k > 0){
-     	int k; # it's ok, it's in new scope now
+
+    if(k <= 0 || p.x >= pl.p.x){
+    	int k; # it's ok, it's in new scope now
+
 	# try some serious embedded statement ! ! !	
-	if(k > 0){
+	if(k > 0 && p.x > pl.p.x){
 	     int k;
 	     if(k > 0){
 	     	  int k;
 	     }
 	}
-     }else{
-     	    int elseelse;
+		}else{
+        	    int elseelse;
 	    while(elseelse > 0){
 	       int kk;
 	       while(kk > 0){
@@ -76,12 +86,13 @@ void main(int a, bool b){
 	    }
      }
 
+     return space == s.pl;
+     return p;
+     #exciting one
+
+     # test funct use
+     # didn't check func argument concurrency, e.g. funcTest(k, bb) will pass too, which will be done in P5
+     funcTest(k, bb, space, p);
+
 }
-
-
-# shouldn't dead
-#int main(){
-
-
-#}
 

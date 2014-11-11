@@ -168,7 +168,7 @@ class ProgramNode extends ASTnode {
 
     public void nameAnalyze(){
 	myDeclList.nameAnalyze(st);
-	echo("<<\nName anaylze finished");
+	// echo("<<\nName anaylze finished");
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -289,6 +289,23 @@ class FormalsListNode extends ASTnode {
 
     }
 
+    public List<String> getFormalListSyms(){
+	List<String> fl = new ArrayList<String>();
+	Iterator<FormalDeclNode> it = myFormals.iterator();
+	try {
+            while (it.hasNext()) {
+		FormalDeclNode tf = it.next();
+		String t = tf.getType().getTypeName();
+		fl.add(t);
+	    }
+
+        } catch (NoSuchElementException ex) {
+            dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
+        }
+
+	return fl;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         Iterator<FormalDeclNode> it = myFormals.iterator();
         if (it.hasNext()) { // if there is at least one element
@@ -379,6 +396,7 @@ class ExpListNode extends ASTnode {
             dead("unexpected NoSuchElementException in ExpListNode.nameAnalyze");
         }
     }
+
 
     public void unparse(PrintWriter p, int indent) {
         Iterator<ExpNode> it = myExps.iterator();
@@ -502,23 +520,65 @@ class FnDeclNode extends DeclNode {
         myBody = body;
     }
 
+    private void addFnDeclToSymTable(SymTable st, String name, Sym fnSym){
+	try{
+	    st.addDecl(name, fnSym);
+	}catch(DuplicateSymException e){
+	    
+	}catch(EmptySymTableException e){
+	
+	}
+    }
+
+
     public void nameAnalyze(SymTable st){
 	// step 1: check if there is already a same name as the function, same as vardecl
-        Sym s = tableCheck(myId.getIDName(), myType.getTypeName(), st);
-	myId.setSym(s);
+	String lookupName = myId.getIDName();
+        Sym sFnNew = new Sym(myType.getTypeName());
+	// echo("in fndecl:" + sFnNew.getType());
+	List<String> fl = myFormalsList.getFormalListSyms();
+	// preparation
+	sFnNew.setFunc(true);
+	sFnNew.setFormalList(fl);
 
-	// declSymbol = s;
+	Sym sFnOld = st.lookupLocal(lookupName);
+
+	if(sFnOld != null){
+	    if(sFnOld.isFunc()){
+
+		// OK contine check formal list
+		List<String> oldfl = sFnOld.getFormalListVars();
+		if(oldfl.size() == fl.size()){ // suspecious
+		    boolean isDup = true;
+		    Iterator<String> oldIt = oldfl.iterator();
+		    Iterator<String> it = fl.iterator();
+		    while(oldIt.hasNext()){
+			if(!(oldIt.next().equals(it.next()))){
+			    isDup = false;
+			    break;
+			}
+		    }
+		    // all argument types are the same, it's a duplication
+		    if(isDup)
+			dead("Multiply declared identifier");
+
+		}else{ // different number of arguments
+		    addFnDeclToSymTable(st, lookupName, sFnNew);
+		}
+
+	    }else{
+		// fnDecl VS non-fnDecl, illegal, considered as duplication
+		dead("Multiply declared identifier");
+	    }
+	}else{
+	    addFnDeclToSymTable(st, lookupName, sFnNew);
+	}
+	// link to that entry
+	myId.setSym(sFnNew);
 
 	// check the name use in the formal list
 	myFormalsList.nameAnalyze(st);
-	//debug
-	// System.out.print("after process formallist, Symbol Table:");
-	// st.print();
-	// check the name use in the fnbody
 	myBody.nameAnalyze(st);
-	// debug
-	// System.out.print("after process function body, Symbol Table:");
-	// st.print();
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -554,12 +614,15 @@ class FormalDeclNode extends DeclNode {
 	}else{
 	    s = tableCheck(myId.getIDName(), myType.getTypeName(), st);
 	    myId.setSym(s);
-	    // declSymbol = s;
 	}
 	// String idName = myId.getIDName();
 	// Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
 	// myId.setSym(s);
 	// declSymbol = s;
+    }
+
+    public TypeNode getType(){
+	return myType;
     }
 
 
@@ -716,7 +779,7 @@ class PostIncStmtNode extends StmtNode {
 
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println("++;");
     }
 
@@ -735,7 +798,7 @@ class PostDecStmtNode extends StmtNode {
 
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println("--;");
     }
 
@@ -755,7 +818,7 @@ class ReadStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("cin >> ");
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println(";");
     }
 
@@ -775,7 +838,7 @@ class WriteStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("cout << ");
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println(";");
     }
 
@@ -807,7 +870,7 @@ class IfStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("if (");
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println(") {");
         myDeclList.unparse(p, indent+4);
         myStmtList.unparse(p, indent+4);
@@ -860,7 +923,7 @@ class IfElseStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("if (");
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println(") {");
         myThenDeclList.unparse(p, indent+4);
         myThenStmtList.unparse(p, indent+4);
@@ -907,7 +970,7 @@ class WhileStmtNode extends StmtNode {
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("while (");
-        myExp.unparse(p, 0);
+        myExp.unparse(p, -1);
         p.println(") {");
         myDeclList.unparse(p, indent+4);
         myStmtList.unparse(p, indent+4);
@@ -956,7 +1019,7 @@ class ReturnStmtNode extends StmtNode {
         p.print("return");
         if (myExp != null) {
             p.print(" ");
-            myExp.unparse(p, 0);
+            myExp.unparse(p, -1);
         }
         p.println(";");
     }
@@ -1067,13 +1130,22 @@ class IdNode extends ExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-         p.print(myStrVal);        
-	 if(mySym != null)
-	     p.print("(" + mySym.getType() +")");
-	 else
-	     p.print("***null***");
-	 // p.print(myStrVal + "(" + mySym.getType() + ")");
-	// p.print(myStrVal + "( )");
+	 // indent is useless here, used to indicate the usage
+	 // -2: for func unparse -1: use 0: declare
+	switch(indent){
+	case -1:
+	     p.print(myStrVal);        
+	     if(mySym != null)
+		 p.print("(" + mySym.getType() +")");
+	     break;
+	case -2:
+	     if(mySym != null)
+		 p.print(mySym.getType());
+	     break;
+	default:
+	     p.print(myStrVal);
+	}
+
     }
 
     public String getIDName(){
@@ -1118,12 +1190,11 @@ class DotAccessExpNode extends ExpNode {
     
     public void nameAnalyze(SymTable st){
 	// e.g a.b.c;	
-	echo("before unrolling");
 	// st.print();
-	// System.out.println(st.lookupGlobal("bb").getStructVars().toString());
 
-	 unrollingLoc(st, myLoc, myId);
-	 echo("dot access finished\n");
+	Sym s = unrollingLoc(st, myLoc, myId);
+	myId.setSym(s);
+	// echo("");
     }
 
     private Sym unrollingLoc(SymTable st, ExpNode loc, IdNode rhs){
@@ -1134,16 +1205,20 @@ class DotAccessExpNode extends ExpNode {
     	    IdNode newID = lhs.dot_GetMyID();
 
     	    Sym s = unrollingLoc(st, newLoc, newID);
+	    newID.setSym(s);
 	    String id;
 	    if(s.isStruct()){
 		id = "struct " + s.getType(); // make to primitive name
-		unrollingLoc(st, new IdNode(0,0,id), rhs);
+		IdNode LOC = new IdNode(0,0,id);
+		LOC.setSym(s);
+		s = unrollingLoc(st, LOC, rhs);
+		rhs.setSym(s);
 	    }
 	    else{
 		dead("Dot-access of non-struct type");
 	    }
 
-	    return null;
+	    return s;
 
     	}else{ //loc is also an IDNode
     	    // step 1 check if this id is a struct 
@@ -1151,9 +1226,10 @@ class DotAccessExpNode extends ExpNode {
 	    // echo("when dot access" + lhs.getIDName());
 	    // st.print();
     	    Sym s = st.lookupGlobal(lhs.getIDName());
+	    lhs.setSym(s);
 	    // echo(lhs.getIDName());
-    	     echo("reach to leftmost identifier, start unrolling");
-    	     echo("access  " + lhs.getIDName() +"." + rhs.getIDName());
+    	     // echo("reach to leftmost identifier, start unrolling");
+    	     // echo("access  " + lhs.getIDName() +"." + rhs.getIDName());
 
     	    if(s == null){// || (s.getType().equals("struct") == false)){
     	    	dead("Undeclared identifier"); // no such identifier declared
@@ -1188,10 +1264,11 @@ class DotAccessExpNode extends ExpNode {
 
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myLoc.unparse(p, 0);
-		p.print(").");
-		myId.unparse(p, 0);
+	    // p.print("(");
+		myLoc.unparse(p, -1);
+		// p.print(").");
+		p.print(".");
+		myId.unparse(p, -1);
     }
 
     // 2 kids
@@ -1211,11 +1288,11 @@ class AssignNode extends ExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-		if (indent != -1)  p.print("(");
-	    myLhs.unparse(p, 0);
+		// if (indent != -1)  p.print("(");
+		myLhs.unparse(p, -1);
 		p.print(" = ");
-		myExp.unparse(p, 0);
-		if (indent != -1)  p.print(")");
+		myExp.unparse(p, -1);
+		// if (indent != -1)  p.print(")");
     }
 
     // 2 kids
@@ -1237,7 +1314,7 @@ class CallExpNode extends ExpNode {
     public void nameAnalyze(SymTable st){
 	// check the use of the function name itself
 	// need check global as it is 
-	checkUseGlobal(myId.getIDName(), st);
+	returnType = checkUseGlobal(myId.getIDName(), st);
 	// check the use of all the arguments this function calls
 	myExpList.nameAnalyze(st);
     }
@@ -1245,16 +1322,25 @@ class CallExpNode extends ExpNode {
     // ** unparse **
     public void unparse(PrintWriter p, int indent) {
 	    myId.unparse(p, 0);
-		p.print("(");
-		if (myExpList != null) {
-			myExpList.unparse(p, 0);
-		}
-		p.print(")");
+	    // add (formals -> return type)
+	    p.print("(");
+	    myExpList.unparse(p, -2);
+	    p.print("->");
+	    p.print(returnType.getType());
+	    p.print(")");
+
+
+	    p.print("(");
+	    if (myExpList != null) {
+		myExpList.unparse(p, -1);
+	    }
+	    p.print(")");
     }
 
     // 2 kids
     private IdNode myId;
     private ExpListNode myExpList;  // possibly null
+    private Sym returnType;
 }
 
 abstract class UnaryExpNode extends ExpNode {
@@ -1294,9 +1380,10 @@ class UnaryMinusNode extends UnaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(-");
-		myExp.unparse(p, 0);
-		p.print(")");
+	    // p.print("(-");
+	p.print("-");
+	myExp.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1306,9 +1393,10 @@ class NotNode extends UnaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(!");
-		myExp.unparse(p, 0);
-		p.print(")");
+	    // p.print("(!");
+	p.print("!");
+	myExp.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1322,11 +1410,11 @@ class PlusNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
+	    // p.print("(");
+		myExp1.unparse(p, -1);
 		p.print(" + ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+		myExp2.unparse(p, -1);
+		// p.print(")");
     }
 }
 
@@ -1336,11 +1424,11 @@ class MinusNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" - ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	    // p.print("(");
+	myExp1.unparse(p, 0);
+	p.print(" - ");
+	myExp2.unparse(p, 0);
+		// p.print(")");
     }
 }
 
@@ -1350,11 +1438,11 @@ class TimesNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" * ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	    // p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" * ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1364,11 +1452,11 @@ class DivideNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" / ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" / ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1378,11 +1466,11 @@ class AndNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" && ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	    // p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" && ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1392,11 +1480,11 @@ class OrNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" || ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" || ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1406,11 +1494,11 @@ class EqualsNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" == ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" == ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1420,11 +1508,11 @@ class NotEqualsNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" != ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" != ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1434,11 +1522,11 @@ class LessNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" < ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" < ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1448,11 +1536,11 @@ class GreaterNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" > ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	    // p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" > ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1462,11 +1550,11 @@ class LessEqNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" <= ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" <= ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }
 
@@ -1476,10 +1564,10 @@ class GreaterEqNode extends BinaryExpNode {
     }
 
     public void unparse(PrintWriter p, int indent) {
-	    p.print("(");
-		myExp1.unparse(p, 0);
-		p.print(" >= ");
-		myExp2.unparse(p, 0);
-		p.print(")");
+	// p.print("(");
+	myExp1.unparse(p, -1);
+	p.print(" >= ");
+	myExp2.unparse(p, -1);
+	// p.print(")");
     }
 }

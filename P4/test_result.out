@@ -1,0 +1,73 @@
+int global;
+bool b;
+struct point{
+    int x;
+    int y;
+};
+
+struct plane{
+    struct point p;
+    int z;
+};
+
+struct space{
+    struct plane pl;
+    int space;
+};
+
+bool funcTest(int a, int b, bool c, int d) {
+}
+
+void main(int a) {
+    int global;
+    bool bb;
+    int k;
+    int space;
+    struct point p;
+    struct plane pl;
+    struct space s;
+    space(int) = p(point).x(int);
+    space(int) = pl(plane).p(point) > s(space).pl(plane).p(point);
+    space(int) = s(space).pl(plane).p(point).x(int);
+    p(point).x(int) = 9;
+    space(int) = p(point).x(int) + pl(plane).p(point).x(int);
+    space(int) = p(point).x(int) - pl(plane).p(point).x(int);
+    space(int) = p(point).x(int) * pl(plane).p(point).x(int);
+    space(int) = p(point).x(int) / pl(plane).p(point).x(int);
+    space(int) = -3;
+    space(int) = true;
+    space(int) = false;
+    space(int) = "hello";
+    space(int) = !p(point);
+    space(int) = -p(point);
+    cout << space(int);
+    cin >> space(int);
+    if (p(point).x(int) > pl(plane).p(point).x(int)) {
+        int bb;
+        struct space inside;
+        bb(int) = global - 3;
+        bb(int) = inside(space).pl(plane).p(point);
+    }
+    if (k(int) <= 0 || p(point).x(int) >= pl(plane).p(point).x(int)) {
+        int k;
+        if (k(int) > 0 && p(point).x(int) > pl(plane).p(point).x(int)) {
+            int k;
+            if (k(int) > 0) {
+                int k;
+            }
+        }
+    }
+    else {
+        int elseelse;
+        while (elseelse(int) > 0) {
+            int kk;
+            while (kk(int) > 0) {
+                int kk;
+            }
+        }
+    }
+    return space(int) == s(space).pl(plane);
+    return p(point);
+    funcTest(int, bool, int, point->bool)(k(int), bb(bool), space(int), p(point));
+}
+

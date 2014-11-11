@@ -8,8 +8,7 @@ public class SymTable {
         list.add(new HashMap<String, Sym>());
     }
     
-    public void addDecl(String name, Sym sym) 
-    throws DuplicateSymException, EmptySymTableException {
+    public void addDecl(String name, Sym sym) throws DuplicateSymException, EmptySymTableException {
         if (name == null || sym == null)
             throw new NullPointerException();
         
