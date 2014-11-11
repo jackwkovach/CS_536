@@ -59,6 +59,12 @@ public class P4 {
 	// after parsing, do name analysis
 	System.out.println("Begin name analyze...\n>>");
 	((ProgramNode)root.value).nameAnalyze();
+	if(!((ASTnode)root.value).isPassedNameAnalyze()){
+	    System.err.println("\nName Analyze Failed...");
+	    System.exit(-1);
+	}else{
+	    System.out.println("\nName Analyze Succeed!!!");
+	}
 	
 	((ASTnode)root.value).unparse(outFile, 0);
         outFile.close();

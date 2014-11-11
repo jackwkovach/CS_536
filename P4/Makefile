@@ -39,6 +39,8 @@ ErrMsg.class: ErrMsg.java
 
 test:
 	java -cp $(CP) P4 test.cf test_result.out
+error:
+	java -cp $(CP) P4 nameErrors.cf nameErrors_result.out
 
 ###
 # clean

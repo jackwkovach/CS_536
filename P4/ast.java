@@ -106,9 +106,10 @@ import java.util.*;
 // **********************************************************************
 
 abstract class ASTnode { 
+    private static boolean isAnalyzePassed = true;
     // every subclass must provide an unparse operation
     abstract public void unparse(PrintWriter p, int indent);
-
+    
     /**
        This is the method in ASTnode used to check declaration in the Symbol table
      */
@@ -135,7 +136,11 @@ abstract class ASTnode {
     /** Error Message Handle*/
     protected void dead(String msg){
 	System.err.println(msg);
-	System.exit(-1);
+	isAnalyzePassed = false;
+	// System.exit(-1);
+    }
+    public boolean isPassedNameAnalyze(){
+	return isAnalyzePassed;
     }
 
     /** Verbose Info */
@@ -448,34 +453,37 @@ class VarDeclNode extends DeclNode {
 	    // st.print();
 	    if(structSym == null){
 		 dead("Invalid name of struct type");
+	    }else{
+
+		structID.setSym(structSym); // link to struct itself
+		// echo("Decl: struct " + structID + " " + myId.getIDName() + "\n");
+
+		varSym = new Sym(structID.getIDName()); // struct aa b; b's type is aa
+		// echo("declare :" + structID.getIDName() + " to " + myId.getIDName());
+
+		// create the symbol and link
+		varSym.setStruct(true); // this identifier is a struct
+		varSym.setStructMap(structSym.getStructVars()); // share a hashmap with struct 
+		myId.setSym(varSym);
+
+		// check if this variable has been multiply declared
+		try{
+		    // echo("storing..."+myId);
+		    st.addDecl(myId.getIDName(), varSym);
+		    // echo("after store");
+		    // st.print();
+		}catch(DuplicateSymException e){
+		    // debug
+		    System.out.print("Symbol Table");
+		    st.print();
+		    dead("Multiply declared identifier");
+		}catch(EmptySymTableException e){
+		    // debug
+		    st.print();
+		    dead("Error scope in varDeclNode, Symbol Table:");
 	     }
-	    structID.setSym(structSym); // link to struct itself
-	    // echo("Decl: struct " + structID + " " + myId.getIDName() + "\n");
 
-	    varSym = new Sym(structID.getIDName()); // struct aa b; b's type is aa
-	    // echo("declare :" + structID.getIDName() + " to " + myId.getIDName());
-
-	     // create the symbol and link
-	     varSym.setStruct(true); // this identifier is a struct
-	     varSym.setStructMap(structSym.getStructVars()); // share a hashmap with struct 
-	     myId.setSym(varSym);
-
-	     // check if this variable has been multiply declared
-	     try{
-		 // echo("storing..."+myId);
-		 st.addDecl(myId.getIDName(), varSym);
-		 // echo("after store");
-		 // st.print();
-	     }catch(DuplicateSymException e){
-		 // debug
-		 System.out.print("Symbol Table");
-		 st.print();
-		 dead("Multiply declared identifier");
-	     }catch(EmptySymTableException e){
-		 // debug
-		 st.print();
-		 dead("Error scope in varDeclNode, Symbol Table:");
-	     }
+	    }
 	     // deug
 	     // System.out.println("identifier: " + myId.getIDName() + " type: " + varSym.getType());
 	     // System.out.println("fields:" + varSym.getStructVars().toString());	     
@@ -1222,7 +1230,12 @@ class DotAccessExpNode extends ExpNode {
 
     	}else{ //loc is also an IDNode
     	    // step 1 check if this id is a struct 
+	    if(loc == null){
+		dead("Undeclared identifier"); // no such identifier declared
+		return null;
+	    }
     	    IdNode lhs = (IdNode)loc;
+
 	    // echo("when dot access" + lhs.getIDName());
 	    // st.print();
     	    Sym s = st.lookupGlobal(lhs.getIDName());
@@ -1236,16 +1249,16 @@ class DotAccessExpNode extends ExpNode {
     	    }else if(!s.isStruct()){
     	    	// System.out.println(s);
     	    	dead("Dot-access of non-struct type"); // this identifier is not a struct
-    	    }
-
-    	    // check rhs
-    	    HashMap<String, Sym> h = s.getStructVars();
-	    // System.out.println("Hashhhhhhh " + h.toString());
-    	    if(!h.containsKey(rhs.getIDName())){
-    	    	dead("Invalid struct field name");
-    	    }
-
-	    return h.get(rhs.getIDName());
+    	    }else{
+		// check rhs
+		HashMap<String, Sym> h = s.getStructVars();
+		// System.out.println("Hashhhhhhh " + h.toString());
+		if(!h.containsKey(rhs.getIDName())){
+		    dead("Invalid struct field name");
+		}
+		return h.get(rhs.getIDName());
+	    }
+	    return null;
     	}
     }
 
