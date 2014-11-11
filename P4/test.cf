@@ -2,17 +2,18 @@ int global;
 bool b;
 
 struct aa{
-       int akk;
+       int aai;
 };
 		
 struct bb{
-       struct aa bkk;
+       struct aa aas;
        int aa;
        int akk;
 };
 
 struct cc{
-       struct bb ckk;
+       struct bb bbs;
+       int l;
 };
 
 struct sss{
@@ -25,30 +26,33 @@ struct sss{
 
 void main(int a, bool b){
      int k;
+     int cc;   # this won't corrupt with struct cc declaration!!! 
      struct aa his;
      struct sss abc;
      struct aa lv1;
      struct bb lv2;
      struct cc lv3;
+     int aa;
 
     # struct declaration
 #     struct sss oo;
 #     struct ss ooo;
 #     	         struct sks oo;   # wrong! invalid struct type
      k = -3;
-     k = lv1.akk;
-     k = lv3.ckk.bkk;
+     k = lv1.aai;
+     k = lv3.bbs.aas;
 
      #exciting one
-     
-
+ 
      # test if statement
      # test global variable
      if(global > 0){
      	int bb;
+	struct bb lvlv;
      # test variable use inside if
      # test variable use from mixed scopes
 	bb = global - 3 + k;
+	k = lv2.aas;
      }
 
      # test if statement
@@ -72,7 +76,12 @@ void main(int a, bool b){
 	    }
      }
 
-
-
-
 }
+
+
+# shouldn't dead
+#int main(){
+
+
+#}
+

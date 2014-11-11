@@ -138,6 +138,11 @@ abstract class ASTnode {
 	System.exit(-1);
     }
 
+    /** Verbose Info */
+    protected void echo(String msg){
+	System.out.println(msg);
+    }
+
     // this method can be used by the unparse methods to do indenting
     protected void doIndent(PrintWriter p, int indent) {
         for (int k=0; k<indent; k++) p.print(" ");
@@ -163,7 +168,7 @@ class ProgramNode extends ASTnode {
 
     public void nameAnalyze(){
 	myDeclList.nameAnalyze(st);
-	//	System.out.println("Name analyze finished");
+	echo("<<\nName anaylze finished");
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -192,6 +197,10 @@ class DeclListNode extends ASTnode {
             dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
         }
     }
+    /**
+       This method should only be called via struct node, which is used to generate all the field of one specific struct declaration
+       @return HashMap<String, Sym> a hashmap of all the fields of a struct
+     */
 
     public HashMap<String, Sym> getStructVars(SymTable st){
 	HashMap<String, Sym> h = new HashMap<String, Sym>();
@@ -202,30 +211,33 @@ class DeclListNode extends ASTnode {
 	    VarDeclNode td = (VarDeclNode)(it.next());
 	    // check if the declare itself is legal
 	    td.nameAnalyze(st);
+
 	    IdNode structID = td.getID();
+	    // System.out.println("structID: " + structID.getIDName());
+
 	    String id = structID.getIDName();
-	    String declType = td.getType();
+	    String declType = td.getType().getTypeName();
 
 	    Sym s;
 	    // if it is a struct declaration inside a struct
 	    if(structID.getSym().isStruct()){
-		s = new Sym(declType);
-		s.setStructMap(structID.getSym().getStructVars());
-		s.setStruct(true);
+	    	s = new Sym(declType);
+	    	s.setStructMap(structID.getSym().getStructVars());
+	    	s.setStruct(true);
 	    }
-	    else{
-		s = new Sym(declType);
+	    else{ // a normal type
+	    	s = new Sym(declType);
 	    }
+
 	    // check the declaration inside struct declaration
 	    if(! h.containsKey(id)){
 	    	h.put(id, s);
-		// System.out.println("putting: " + id + " isStruct: " + s.isStruct() + " type: " + s.getType());
 	    }
 	    else
-		dead("Multiply declared identifier");
-    	}
-	
+	    	dead("Multiply declared identifier");
 
+    	}
+	// remove this scope, no further useage..
 	try{
 	    st.removeScope();
 	}catch(EmptySymTableException e){
@@ -267,6 +279,13 @@ class FormalsListNode extends ASTnode {
         } catch (NoSuchElementException ex) {
             dead("unexpected NoSuchElementException in DeclListNode.nameAnalyze");
         }
+
+	// don't move the scope, it will be removed in fnBody
+	// try{
+	//     st.removeScope();
+	// }catch(EmptySymTableException e){
+	//     dead("Error in formalListNode, Symbol Table is empty already:");
+	// }
 
     }
 
@@ -394,28 +413,52 @@ class VarDeclNode extends DeclNode {
 
     public void nameAnalyze(SymTable st){
 	Sym varSym; 
-	if(myType.getType().equals("int")||
-	   myType.getType().equals("bool") ){ 	//  it is a normal type
-	    varSym = tableCheck(myId.getIDName(), myType.getType(), st);
+	String t = myType.getTypeName();
+	if(t.equals("int")|| t.equals("bool") ){ 	//  it is a normal type
+	    varSym = tableCheck(myId.getIDName(), myType.getTypeName(), st);
 	    myId.setSym(varSym);
-	    // declSymbol = s;
-	}else if(myType.getType().equals("void")){
+
+	}else if(t.equals("void")){
 	    dead("Non-function declared void");
 
 	}else{	    // it is a struct type
-	    // check if the struct type exists and struct is always in the outmost level
+	    // System.out.println("struct declare type name:" + t);
+	    // check if the struct type exists
 	    IdNode structID = ((StructNode)myType).getStructNodeID();
-	    Sym structSym = st.lookupGlobal(structID.getIDName());
-
-	    if(structSym == null){// || (s.getType().equals("struct") == false)){
+	    String structName = "struct " + structID.getIDName();
+	    Sym structSym = st.lookupGlobal(structName);
+	    // st.print();
+	    if(structSym == null){
 		 dead("Invalid name of struct type");
 	     }
-	     // check if this variable has been multiply declared
-	     varSym = tableCheck(myId.getIDName(), structID.getIDName(), st);
-	     // pass the fields to it for dot access
+	    structID.setSym(structSym); // link to struct itself
+	    // echo("Decl: struct " + structID + " " + myId.getIDName() + "\n");
+
+	    varSym = new Sym(structID.getIDName()); // struct aa b; b's type is aa
+	    // echo("declare :" + structID.getIDName() + " to " + myId.getIDName());
+
+	     // create the symbol and link
 	     varSym.setStruct(true); // this identifier is a struct
-	     varSym.setStructMap(structSym.getStructVars());
+	     varSym.setStructMap(structSym.getStructVars()); // share a hashmap with struct 
 	     myId.setSym(varSym);
+
+	     // check if this variable has been multiply declared
+	     try{
+		 // echo("storing..."+myId);
+		 st.addDecl(myId.getIDName(), varSym);
+		 // echo("after store");
+		 // st.print();
+	     }catch(DuplicateSymException e){
+		 // debug
+		 System.out.print("Symbol Table");
+		 st.print();
+		 dead("Multiply declared identifier");
+	     }catch(EmptySymTableException e){
+		 // debug
+		 st.print();
+		 dead("Error scope in varDeclNode, Symbol Table:");
+	     }
+	     // deug
 	     // System.out.println("identifier: " + myId.getIDName() + " type: " + varSym.getType());
 	     // System.out.println("fields:" + varSym.getStructVars().toString());	     
 	     // System.out.println(myId + " is struct: "+varSym.isStruct() + "\n");
@@ -424,8 +467,8 @@ class VarDeclNode extends DeclNode {
 
     }
 
-    public String getType(){
-	return myType.getType();
+    public TypeNode getType(){
+	return myType;
     }
 
     public IdNode getID(){
@@ -461,7 +504,7 @@ class FnDeclNode extends DeclNode {
 
     public void nameAnalyze(SymTable st){
 	// step 1: check if there is already a same name as the function, same as vardecl
-        Sym s = tableCheck(myId.getIDName(), myType.getType(), st);
+        Sym s = tableCheck(myId.getIDName(), myType.getTypeName(), st);
 	myId.setSym(s);
 
 	// declSymbol = s;
@@ -506,10 +549,10 @@ class FormalDeclNode extends DeclNode {
     public void nameAnalyze(SymTable st){
 	Sym s; 
 	
-	if(myType.getType().equals("void")){
+	if(myType.getTypeName().equals("void")){
 	    dead("Non-function declared void");
 	}else{
-	    s = tableCheck(myId.getIDName(), myType.getType(), st);
+	    s = tableCheck(myId.getIDName(), myType.getTypeName(), st);
 	    myId.setSym(s);
 	    // declSymbol = s;
 	}
@@ -539,13 +582,15 @@ class StructDeclNode extends DeclNode {
     /** TODO */
     public void nameAnalyze(SymTable st){
 	// check declaration and the primitive define type should be 'struct'
-	Sym s = tableCheck(myId.getIDName(), "struct", st);
+	String structName = "struct " + myId.getIDName();
+	Sym s = tableCheck(structName, "struct", st);
+
 	s.setStruct(true);
-	// add struct fields
-	s.setStructMap(myDeclList.getStructVars(st));
-	// link id to that symbol 
-	myId.setSym(s);
-	// System.out.println(myId + " primitive struct");
+	s.setStructMap(myDeclList.getStructVars(st));	// add struct fields
+	myId.setSym(s);	// link id to that symbol 
+	// debug
+	// System.out.println("declare primitive struct");
+	// st.print();
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -569,7 +614,7 @@ class StructDeclNode extends DeclNode {
 
 abstract class TypeNode extends ASTnode {
 
-    abstract String getType();
+    abstract String getTypeName();
 }
 
 class IntNode extends TypeNode {
@@ -580,7 +625,7 @@ class IntNode extends TypeNode {
         p.print("int");
     }
     
-    public String getType(){
+    public String getTypeName(){
 	return "int";
     }
 
@@ -594,7 +639,7 @@ class BoolNode extends TypeNode {
         p.print("bool");
     }
 
-    public String getType(){
+    public String getTypeName(){
 	return "bool";
     }
 }
@@ -607,7 +652,7 @@ class VoidNode extends TypeNode {
         p.print("void");
     }
 
-    public String getType(){
+    public String getTypeName(){
 	return "void";
     }
 }
@@ -622,7 +667,7 @@ class StructNode extends TypeNode {
 	myId.unparse(p, 0);
     }
 
-    public String getType(){
+    public String getTypeName(){
 	return myId.getIDName();
     }	
 
@@ -793,6 +838,7 @@ class IfElseStmtNode extends StmtNode {
 	st.addScope();
 	myThenDeclList.nameAnalyze(st);
 	myThenStmtList.nameAnalyze(st);
+
 	try{
 	    st.removeScope();
 	}catch(EmptySymTableException e){
@@ -802,6 +848,7 @@ class IfElseStmtNode extends StmtNode {
 	st.addScope();
 	myElseDeclList.nameAnalyze(st);
 	myElseStmtList.nameAnalyze(st);
+
 	try{
 	    st.removeScope();
 	}catch(EmptySymTableException e){
@@ -849,6 +896,7 @@ class WhileStmtNode extends StmtNode {
 	st.addScope();
 	myDeclList.nameAnalyze(st);
 	myStmtList.nameAnalyze(st);
+
 	try{
 	    st.removeScope();
 	}catch(EmptySymTableException e){
@@ -1020,12 +1068,20 @@ class IdNode extends ExpNode {
 
     public void unparse(PrintWriter p, int indent) {
          p.print(myStrVal);        
-	// p.print(myStrVal + "(" + mySym.getType() + ")");
+	 if(mySym != null)
+	     p.print("(" + mySym.getType() +")");
+	 else
+	     p.print("***null***");
+	 // p.print(myStrVal + "(" + mySym.getType() + ")");
 	// p.print(myStrVal + "( )");
     }
 
     public String getIDName(){
 	return myStrVal;
+    }
+
+    public void setIDName(String s){
+	myStrVal = s;
     }
 
     public Sym getSym(){
@@ -1037,7 +1093,13 @@ class IdNode extends ExpNode {
     }
 
     public String toString(){
-	return myStrVal;
+	// for debug
+	HashMap<String, Sym> h; 
+	if(mySym != null)
+	    if((h = mySym.getStructVars() )!= null)
+		return myStrVal + ": " + h.toString();
+	
+	return myStrVal + ": " + "***null***";
 	// return myStrVal + ":\n" + mySym.getStructVars().toString();
     }
 
@@ -1056,37 +1118,59 @@ class DotAccessExpNode extends ExpNode {
     
     public void nameAnalyze(SymTable st){
 	// e.g a.b.c;	
-	unrollingLoc(st, myLoc, myId);
+	echo("before unrolling");
+	// st.print();
+	// System.out.println(st.lookupGlobal("bb").getStructVars().toString());
+
+	 unrollingLoc(st, myLoc, myId);
+	 echo("dot access finished\n");
     }
 
-    private void unrollingLoc(SymTable st, ExpNode loc, IdNode rhs){
-	System.out.println("LHS Loc: " + loc.isLoc() + " RHS:" + rhs.getIDName() + " -Loc: " +rhs.isLoc());
-	if(loc.isLoc()){ // need go to next level 
-	    DotAccessExpNode lhs = (DotAccessExpNode)loc;
-	    unrollingLoc(st, lhs.dot_GetMyLoc(), lhs.dot_GetMyID());
+    private Sym unrollingLoc(SymTable st, ExpNode loc, IdNode rhs){
+    // 	// System.out.println("LHS Loc: " + loc.isLoc() + " RHS:" + rhs.getIDName() + " -Loc: " +rhs.isLoc());
+    	if(loc.isLoc()){ // need go to next level 
+    	    DotAccessExpNode lhs = (DotAccessExpNode)loc;
+    	    ExpNode newLoc = lhs.dot_GetMyLoc();
+    	    IdNode newID = lhs.dot_GetMyID();
 
-	}else{ //loc is also an IDNode
-	    // step 1 check if this id is a struct 
-	    System.out.println("reach to leftmost identifier, start unrolling");
-	    IdNode lhs = (IdNode)loc;
-	    /** lhs.getsym null why?*/
-	    // System.out.println("-LHS:" + lhs.getIDName() + " is struct:");// + lhs.getSym().isStruct());
-	    Sym s = st.lookupGlobal(lhs.getIDName());
-
-	    // check lhs
-	    if(s == null){// || (s.getType().equals("struct") == false)){
-	    	dead("Undeclared identifier"); // no such identifier declared
-	    }else if(!s.isStruct()){
-	    	// System.out.println(s);
-	    	dead("Dot-access of non-struct type"); // this identifier is not a struct
+    	    Sym s = unrollingLoc(st, newLoc, newID);
+	    String id;
+	    if(s.isStruct()){
+		id = "struct " + s.getType(); // make to primitive name
+		unrollingLoc(st, new IdNode(0,0,id), rhs);
+	    }
+	    else{
+		dead("Dot-access of non-struct type");
 	    }
 
-	    // check rhs
-	    HashMap<String, Sym> h = s.getStructVars();
-	    if(!h.containsKey(rhs.getIDName())){
-	    	dead("Invalid struct field name");
-	    }
-	}
+	    return null;
+
+    	}else{ //loc is also an IDNode
+    	    // step 1 check if this id is a struct 
+    	    IdNode lhs = (IdNode)loc;
+	    // echo("when dot access" + lhs.getIDName());
+	    // st.print();
+    	    Sym s = st.lookupGlobal(lhs.getIDName());
+	    // echo(lhs.getIDName());
+    	     echo("reach to leftmost identifier, start unrolling");
+    	     echo("access  " + lhs.getIDName() +"." + rhs.getIDName());
+
+    	    if(s == null){// || (s.getType().equals("struct") == false)){
+    	    	dead("Undeclared identifier"); // no such identifier declared
+    	    }else if(!s.isStruct()){
+    	    	// System.out.println(s);
+    	    	dead("Dot-access of non-struct type"); // this identifier is not a struct
+    	    }
+
+    	    // check rhs
+    	    HashMap<String, Sym> h = s.getStructVars();
+	    // System.out.println("Hashhhhhhh " + h.toString());
+    	    if(!h.containsKey(rhs.getIDName())){
+    	    	dead("Invalid struct field name");
+    	    }
+
+	    return h.get(rhs.getIDName());
+    	}
     }
 
     /**override */
