@@ -10,8 +10,11 @@ class ErrMsg {
      * @param charNum character number (i.e., column) for error location
      * @param msg associated message for error
      */
+    private static boolean isPassedNameAnalyze = true;
+
     static void fatal(int lineNum, int charNum, String msg) {
         System.err.println(lineNum + ":" + charNum + " ***ERROR*** " + msg);
+	isPassedNameAnalyze = false;
     }
 
     /**
@@ -23,4 +26,14 @@ class ErrMsg {
     static void warn(int lineNum, int charNum, String msg) {
         System.err.println(lineNum + ":" + charNum + " ***WARNING*** " + msg);
     }
+
+    public static boolean isAnalyzePassed(){
+	return isPassedNameAnalyze;
+    }
+
+    public static void setIsAnalyzePassed(boolean b){
+	isPassedNameAnalyze = b;
+    }
+
+    
 }

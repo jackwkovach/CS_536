@@ -16,12 +16,18 @@ struct plane{
 struct space{
        struct plane pl;
        int space;
+
+#       bool pl;
 };
 
 # test multiply declaration
 int funcTest;
+int main(int b, int c){
 
-bool funcTest(int a, int b, bool c, int d ){
+    nondeclared();
+}
+
+bool funcTest(int a, int b, bool c, int d , void ji){
        # test multiply declaration
        bool a;
 }
@@ -33,6 +39,7 @@ void main(int a, int k){
      int global;
      bool bb;
      int space;   # this won't corrupt with struct cc declaration!!! 
+     struct point bb;
      struct point p;
      struct plane pl;
      struct space s;
@@ -49,6 +56,7 @@ void main(int a, int k){
 
      # Dot Access non-struct type
      space = global.x;
+     space = space.space.x;
      #Invalid struct field name
      space = p.invalid;
 
