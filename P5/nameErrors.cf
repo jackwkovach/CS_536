@@ -1,0 +1,126 @@
+int global;
+bool b;
+
+struct point{
+       int x;
+       int y;
+       # test multiply declaration
+       bool x;
+};
+
+struct plane{
+       struct point p;
+       int z;
+};
+
+struct space{
+       struct plane pl;
+       int space;
+
+#       bool pl;
+};
+
+# test multiply declaration
+int funcTest;
+int main(int b, int c){
+
+    nondeclared();
+}
+
+bool funcTest(int a, int b, bool c, int d , void ji){
+       # test multiply declaration
+       bool a;
+}
+
+     # Non-function declared void
+void main(int a, int k){
+
+     #try same names
+     int global;
+     bool bb;
+     int space;   # this won't corrupt with struct cc declaration!!! 
+     struct point bb;
+     struct point p;
+     struct plane pl;
+     struct space s;
+     # Invalid name of struct type
+    struct sd inva;
+
+
+     # Non-function declared void
+     void q;
+    struct sks oo;   # wrong! invalid struct type
+
+     #undeclared indentifier
+     gg = bb;
+
+     # Dot Access non-struct type
+     space = global.x;
+     space = space.space.x;
+     #Invalid struct field name
+     space = p.invalid;
+
+     
+     space = p.x;
+     space = pl.p > s.pl.p;
+     space = s.pl.p.x;
+     p.x = 9;
+     
+     # test expNode
+     space = p.x + pl.p.x;
+     space = p.x - pl.p.x;
+     space = p.x * pl.p.x;
+     space = p.x / pl.p.x;
+     space = -3;  
+     space = true;
+     space = false;
+     space = "hello";	
+     space = !p;
+     space = -p;
+
+     cout<<space;
+     cin >> space;
+     # test if statement
+     # test global variable
+
+    if(p.x > pl.p.x){
+    	int bb;
+	struct space inside;
+     # test variable use inside if
+     # test variable use from mixed scopes
+	bb = global - 3 ;
+	bb = inside.pl.p;
+    }
+     # test if statement
+     # test global variable
+
+    if(k <= 0 || p.x >= pl.p.x){
+    	int k; # it's ok, it's in new scope now
+
+	# try some serious embedded statement ! ! !	
+	if(k > 0 && p.x > pl.p.x){
+	     int k;
+	     if(k > 0){
+	     	  int k;
+	     }
+	}
+		}else{
+        	    int elseelse;
+	    while(elseelse > 0){
+	       int kk;
+	       while(kk > 0){
+		   int kk;
+	 	 }
+	    }
+     }
+
+     return space == s.pl;
+     return p;
+     #exciting one
+
+     # test funct use
+     # didn't check func argument concurrency, e.g. funcTest(k, bb) will pass too, which will be done in P5
+     funcTest(k, bb, space, p);
+
+}
+
