@@ -3,9 +3,23 @@ struct point{
        int y;
 };
 
+struct plane{
+       struct point p;
+       int z;
+};
+
+struct space{
+       struct plane pl;
+       int z;
+};      
+
 void main(){
-
-     int point;   
-     struct point s;
+     int a;
+     bool b;
+     int c;
+     struct point p;
+     struct space s;
+     s.pl.p.x = b;
+     p = s;
+     point = space;
 }
-

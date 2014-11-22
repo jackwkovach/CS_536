@@ -113,6 +113,10 @@ abstract class ASTnode {
     protected void doIndent(PrintWriter p, int indent) {
         for (int k=0; k<indent; k++) p.print(" ");
     }
+
+    protected void echo(String Tag, String msg){
+	System.out.println(Tag + ": " + msg);
+    }
 }
 
 // **********************************************************************
@@ -137,7 +141,8 @@ class ProgramNode extends ASTnode {
     
     public boolean typeCheck(){
     	// TODO: You'll have to change this
-    	return false;
+	return myDeclList.typeCheck();
+    	// return false;
     }
     
     public void unparse(PrintWriter p, int indent) {
@@ -176,6 +181,22 @@ class DeclListNode extends ASTnode {
             }
         }
     }    
+
+    public boolean typeCheck(){
+    	// TODO: You'll have to change this
+	boolean result = true;
+	for(DeclNode node : myDecls){
+	    if(node instanceof FnDeclNode){
+		result = ((FnDeclNode)node).typeCheck();
+		if(result == false) // if any fnDecl is failed, error, return.
+		    return result;
+	    }else{
+		continue;
+	    }
+	}
+	return result;
+    }
+
     
     public void unparse(PrintWriter p, int indent) {
         Iterator it = myDecls.iterator();
@@ -254,6 +275,12 @@ class FnBodyNode extends ASTnode {
         myDeclList.nameAnalysis(symTab);
         myStmtList.nameAnalysis(symTab);
     }    
+
+    public boolean typeCheck(){
+	return myStmtList.typeCheck();
+    }
+
+
     
     public void unparse(PrintWriter p, int indent) {
         myDeclList.unparse(p, indent);
@@ -280,6 +307,16 @@ class StmtListNode extends ASTnode {
         }
     }    
     
+    public boolean typeCheck(){
+	boolean result = true;
+	for(StmtNode sNode : myStmts){
+	    if(sNode.typeCheck() == false);
+		result = false;
+	}
+
+	return result;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         Iterator<StmtNode> it = myStmts.iterator();
         while (it.hasNext()) {
@@ -501,6 +538,12 @@ class FnDeclNode extends DeclNode {
         
         return null;
     }    
+
+    public boolean typeCheck(){
+    	// TODO: You'll have to change this
+	// no need to check formalList, the use is checked in other fnDecl's fnBody
+	return  myBody.typeCheck();
+    }
     
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
@@ -736,6 +779,8 @@ class StructNode extends TypeNode {
 
 abstract class StmtNode extends ASTnode {
     abstract public void nameAnalysis(SymTable symTab);
+    abstract public boolean typeCheck();
+
 }
 
 class AssignStmtNode extends StmtNode {
@@ -751,6 +796,11 @@ class AssignStmtNode extends StmtNode {
         myAssign.nameAnalysis(symTab);
     }
     
+    public boolean typeCheck(){
+	return myAssign.typeCheck();
+	// return false;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myAssign.unparse(p, -1); // no parentheses
@@ -774,6 +824,11 @@ class PostIncStmtNode extends StmtNode {
         myExp.nameAnalysis(symTab);
     }
     
+    public boolean typeCheck(){
+	return false;
+
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myExp.unparse(p, 0);
@@ -797,6 +852,11 @@ class PostDecStmtNode extends StmtNode {
         myExp.nameAnalysis(symTab);
     }
     
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myExp.unparse(p, 0);
@@ -820,6 +880,11 @@ class ReadStmtNode extends StmtNode {
         myExp.nameAnalysis(symTab);
     }    
     
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("cin >> ");
@@ -844,6 +909,11 @@ class WriteStmtNode extends StmtNode {
         myExp.nameAnalysis(symTab);
     }
     
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("cout << ");
@@ -884,6 +954,11 @@ class IfStmtNode extends StmtNode {
         }
     }
     
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("if (");
@@ -947,6 +1022,11 @@ class IfElseStmtNode extends StmtNode {
         }
     }
     
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("if (");
@@ -1001,6 +1081,11 @@ class WhileStmtNode extends StmtNode {
         }
     }
     
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("while (");
@@ -1031,6 +1116,11 @@ class CallStmtNode extends StmtNode {
         myCall.nameAnalysis(symTab);
     }
 
+    public boolean typeCheck(){
+	return false;
+	// return myCall.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myCall.unparse(p, indent);
@@ -1057,6 +1147,11 @@ class ReturnStmtNode extends StmtNode {
         }
     }
 
+    public boolean typeCheck(){
+	return false;
+	// return myExp.typeCheck();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         p.print("return");
@@ -1080,6 +1175,23 @@ abstract class ExpNode extends ASTnode {
      * Default version for nodes with no names
      */
     public void nameAnalysis(SymTable symTab) { }
+
+    /**
+     * This method type of the expNode, but need first checkType before return the expNode type
+     * i.e. LessEqualNode(10 <= 12) returns BoolType 
+     * Override in each expNode
+     */
+    public Type expReturnType(){ return null;}
+
+    public boolean typeCheck(){return false;}
+
+    /**
+     * Return the Idnode that is at the leftmost of an expNode
+     */
+    public IdNode getExpFirstIdNode(){
+	return null;
+    }
+    
 }
 
 class IntLitNode extends ExpNode {
@@ -1133,6 +1245,7 @@ class FalseNode extends ExpNode {
         myLineNum = lineNum;
         myCharNum = charNum;
     }
+
 
     public void unparse(PrintWriter p, int indent) {
         p.print("false");
@@ -1198,7 +1311,23 @@ class IdNode extends ExpNode {
             link(sym);
         }
     }
-    
+
+    public Type expReturnType(){
+	return mySym.getType();
+    }
+
+    public IdNode getExpFirstIdNode(){
+	return this;
+    }
+
+    public void typeCheckError(String msg){
+	ErrMsg.fatal(myLineNum, myCharNum, msg);
+    }
+
+    public boolean typeCheck(){
+	return true;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
         if (mySym != null) {
@@ -1336,7 +1465,29 @@ class DotAccessExpNode extends ExpNode {
             }
         }
     }    
-    
+
+    /**
+     * This method returns the ID that is finally accessed
+     */
+    public IdNode getDotAccessLastID(){
+	return myId;
+    }
+
+    public IdNode getExpFirstIdNode(){
+	if(myLoc instanceof DotAccessExpNode)
+	    return ((DotAccessExpNode)myLoc).getExpFirstIdNode();
+	else // my loC is also an IdNode
+	    return (IdNode)myLoc;
+    }
+
+    public Type expReturnType(){
+	return myId.sym().getType();
+    }
+
+    public boolean typeCheck(){
+	return true;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         myLoc.unparse(p, 0);
         p.print(".");
@@ -1365,7 +1516,78 @@ class AssignNode extends ExpNode {
         myLhs.nameAnalysis(symTab);
         myExp.nameAnalysis(symTab);
     }
-    
+
+    public boolean typeCheck(){
+	Type lhsType;
+	Type rhsType;
+	IdNode lhsId;
+	// according to CFLAT.cup, myLhs is either a loc i.e ID or DotAccess
+	if(myLhs instanceof IdNode){
+	    lhsId =  ((IdNode)myLhs);
+	}else{
+	    lhsId = ((DotAccessExpNode)myLhs).getDotAccessLastID();
+	}
+	// else{
+	//     // code shouldn't go here.
+	//     System.err.println("Unknow Error in AssignNode");
+	//     System.exit(-1);
+	// }
+
+	lhsType = lhsId.sym().getType();
+	boolean rhsCheck = myExp.typeCheck();
+
+	if(rhsCheck == true){
+	    // if it is OK with the right hand side exp, get its return type
+	    rhsType = myExp.expReturnType();
+	}else{
+	    return false;
+	}
+	// if(lhsType == null)
+	//     echo("lhs", "is null");
+	// if(rhsType == null)
+	//     echo("rhs", "is null");
+	String lhsTypeName = lhsType.toString();
+	String rhsTypeName = rhsType.toString();
+	// echo("lhs", lhsTypeName);
+	// echo("rhs", rhsTypeName);
+
+	if(lhsTypeName.equals(rhsTypeName)){
+	    // check for A = B, a = b, f = g
+	    if(lhsTypeName.equals("function")){
+		lhsId.typeCheckError("Function assignment");
+		return false;
+	    }else if(lhsTypeName.equals("struct")){
+		// echo("lhs = rhs", "primitive Struct");
+		lhsId.typeCheckError("Struct name assignment");
+		return false;
+	    }	    
+	    return true;
+	}else{	    // mismatch type
+	    if((lhsType instanceof StructType) && (rhsType instanceof StructType)){
+		IdNode lhsFirstId = myLhs.getExpFirstIdNode();
+		lhsFirstId.typeCheckError("Struct variable assignment");
+	    }else{
+		lhsId.typeCheckError("Type mismatch");
+	    }
+	    return false;
+	}
+    }
+
+    public Type expReturnType(){
+	IdNode lhsId;
+	// according to CFLAT.cup, myLhs is either a loc i.e ID or DotAccess
+	if(myLhs instanceof IdNode){
+	    lhsId =  ((IdNode)myLhs);
+	}else{
+	    lhsId = ((DotAccessExpNode)myLhs).getDotAccessLastID();
+	}
+	return lhsId.sym().getType();
+    }
+
+    public IdNode getExpFirstIdNode(){
+	return myLhs.getExpFirstIdNode();
+    }
+
     public void unparse(PrintWriter p, int indent) {
         if (indent != -1)  p.print("(");
         myLhs.unparse(p, 0);
@@ -1399,6 +1621,18 @@ class CallExpNode extends ExpNode {
         myId.nameAnalysis(symTab);
         myExpList.nameAnalysis(symTab);
     }    
+
+    public IdNode getExpFirstIdNode(){
+	return myId;
+    }
+
+    public Type expReturnType(){
+	return new FnType();
+    }
+
+    public boolean typeCheck(){
+	return true;
+    }
     
     // ** unparse **
     public void unparse(PrintWriter p, int indent) {
@@ -1574,6 +1808,53 @@ class EqualsNode extends BinaryExpNode {
         super(exp1, exp2);
     }
 
+    public Type expReturnType(){
+	return new BoolType();
+    }
+
+    public boolean typeCheck(){
+	Type lhsType;
+	Type rhsType;
+	// according to CFLAT.cup, myLhs is either a loc i.e ID or DotAccess
+	if(myExp1.typeCheck() == true && myExp2.typeCheck() == true){
+	    lhsType = myExp1.expReturnType();
+	    rhsType = myExp2.expReturnType();
+
+	    String lhsTypeName = lhsType.toString();
+	    String rhsTypeName = rhsType.toString();
+	    echo("EqualsNode-lhs", lhsTypeName);
+	    echo("EqualsNode-rhs", rhsTypeName);
+	    
+	    IdNode lhsId;
+
+	    if(lhsTypeName.equals(rhsTypeName)){
+		// check for A = B, a = b, f = g
+		if(lhsTypeName.equals("function")){
+		    lhsId = ((CallExpNode)myExp1).getExpFirstIdNode();
+		    lhsId.typeCheckError("Equality operator applied to functionsEquality operator applied to functions");
+		    return false;
+		}else if(lhsTypeName.equals("struct")){
+		    // echo("lhs = rhs", "primitive Struct");
+		    lhsId = (IdNode)myExp1;
+		    lhsId.typeCheckError("Equality operator applied to struct names");
+		    return false;
+		}	    
+		return true;
+	    }else{	    // mismatch type
+		if((lhsType instanceof StructType) && (rhsType instanceof StructType)){
+		    lhsId = (IdNode)myExp1;
+		    lhsId.typeCheckError("Equality operator applied to struct variables");
+		}else{
+		    // lhsId = getExpFirstIdNode()
+		    // lhsId.typeCheckError("Type mismatch");
+		}
+		return false;
+	    }
+	}else{
+	    return false;
+	}
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         myExp1.unparse(p, 0);
@@ -1586,6 +1867,10 @@ class EqualsNode extends BinaryExpNode {
 class NotEqualsNode extends BinaryExpNode {
     public NotEqualsNode(ExpNode exp1, ExpNode exp2) {
         super(exp1, exp2);
+    }
+
+    public Type expReturnType(){
+	return new BoolType();
     }
 
     public void unparse(PrintWriter p, int indent) {

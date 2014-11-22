@@ -1,0 +1,418 @@
+
+ast.java,15992
+abstract class ASTnode 108,4350
+    protected void doIndent(ASTnode.doIndent113,4564
+    protected void echo(ASTnode.echo117,4679
+class ProgramNode 127,5014
+    public ProgramNode(ProgramNode.ProgramNode128,5050
+    public void nameAnalysis(ProgramNode.nameAnalysis137,5311
+    public boolean typeCheck(ProgramNode.typeCheck142,5438
+    public void unparse(ProgramNode.unparse148,5576
+    private DeclListNode myDeclList;ProgramNode.myDeclList153,5688
+class DeclListNode 156,5728
+    public DeclListNode(DeclListNode.DeclListNode157,5765
+    public void nameAnalysis(DeclListNode.nameAnalysis165,5947
+    public void nameAnalysis(DeclListNode.nameAnalysis175,6257
+    public boolean typeCheck(DeclListNode.typeCheck185,6580
+    public void unparse(DeclListNode.unparse201,6936
+    private List<DeclNode> myDecls;DeclListNode.myDecls214,7367
+class FormalsListNode 217,7406
+    public FormalsListNode(FormalsListNode.FormalsListNode218,7446
+    public List<Type> nameAnalysis(FormalsListNode.nameAnalysis229,7746
+    public int length(FormalsListNode.length243,8160
+    public void unparse(FormalsListNode.unparse247,8230
+    private List<FormalDeclNode> myFormals;FormalsListNode.myFormals259,8662
+class FnBodyNode 262,8709
+    public FnBodyNode(FnBodyNode.FnBodyNode263,8744
+    public void nameAnalysis(FnBodyNode.nameAnalysis274,9033
+    public boolean typeCheck(FnBodyNode.typeCheck279,9174
+    public void unparse(FnBodyNode.unparse285,9251
+    private DeclListNode myDeclList;FnBodyNode.myDeclList291,9403
+    private StmtListNode myStmtList;FnBodyNode.myStmtList292,9440
+class StmtListNode 295,9480
+    public StmtListNode(StmtListNode.StmtListNode296,9517
+    public void nameAnalysis(StmtListNode.nameAnalysis304,9697
+    public boolean typeCheck(StmtListNode.typeCheck310,9849
+    public void unparse(StmtListNode.unparse320,10019
+    private List<StmtNode> myStmts;StmtListNode.myStmts328,10246
+class ExpListNode 331,10285
+    public ExpListNode(ExpListNode.ExpListNode332,10321
+    public void nameAnalysis(ExpListNode.nameAnalysis340,10496
+    public void unparse(ExpListNode.unparse346,10642
+    private List<ExpNode> myExps;ExpListNode.myExps358,11057
+abstract class DeclNode 365,11274
+class VarDeclNode 372,11442
+    public VarDeclNode(VarDeclNode.VarDeclNode373,11479
+    public SemSym nameAnalysis(VarDeclNode.nameAnalysis394,12224
+    public SemSym nameAnalysis(VarDeclNode.nameAnalysis398,12330
+    public void unparse(VarDeclNode.unparse456,14469
+    private TypeNode myType;VarDeclNode.myType465,14678
+    private IdNode myId;VarDeclNode.myId466,14707
+    private int mySize;VarDeclNode.mySize467,14732
+    public static int NOT_STRUCT VarDeclNode.NOT_STRUCT469,14811
+class FnDeclNode 472,14853
+    public FnDeclNode(FnDeclNode.FnDeclNode473,14889
+    public SemSym nameAnalysis(FnDeclNode.nameAnalysis496,15628
+    public boolean typeCheck(FnDeclNode.typeCheck542,17288
+    public void unparse(FnDeclNode.unparse548,17478
+    private TypeNode myType;FnDeclNode.myType561,17811
+    private IdNode myId;FnDeclNode.myId562,17840
+    private FormalsListNode myFormalsList;FnDeclNode.myFormalsList563,17865
+    private FnBodyNode myBody;FnDeclNode.myBody564,17908
+class FormalDeclNode 567,17942
+    public FormalDeclNode(FormalDeclNode.FormalDeclNode568,17982
+    public SemSym nameAnalysis(FormalDeclNode.nameAnalysis581,18415
+    public void unparse(FormalDeclNode.unparse617,19702
+    private TypeNode myType;FormalDeclNode.myType624,19858
+    private IdNode myId;FormalDeclNode.myId625,19887
+class StructDeclNode 628,19915
+    public StructDeclNode(StructDeclNode.StructDeclNode629,19955
+    public SemSym nameAnalysis(StructDeclNode.nameAnalysis644,20438
+    public void unparse(StructDeclNode.unparse678,21683
+    private IdNode myId;StructDeclNode.myId690,21966
+    private DeclListNode myDeclList;StructDeclNode.myDeclList691,21991
+abstract class TypeNode 698,22211
+class IntNode 703,22341
+    public IntNode(IntNode.IntNode704,22374
+    public Type type(IntNode.type710,22432
+    public void unparse(IntNode.unparse714,22498
+class BoolNode 719,22584
+    public BoolNode(BoolNode.BoolNode720,22618
+    public Type type(BoolNode.type726,22677
+    public void unparse(BoolNode.unparse730,22744
+class VoidNode 735,22831
+    public VoidNode(VoidNode.VoidNode736,22865
+    public Type type(VoidNode.type742,22928
+    public void unparse(VoidNode.unparse746,22995
+class StructNode 751,23082
+    public StructNode(StructNode.StructNode752,23118
+    public IdNode idNode(StructNode.idNode756,23179
+    public Type type(StructNode.type763,23268
+    public void unparse(StructNode.unparse767,23341
+    private IdNode myId;StructNode.myId773,23476
+abstract class StmtNode 780,23684
+class AssignStmtNode 786,23827
+    public AssignStmtNode(AssignStmtNode.AssignStmtNode787,23867
+    public void nameAnalysis(AssignStmtNode.nameAnalysis795,24063
+    public boolean typeCheck(AssignStmtNode.typeCheck799,24161
+    public void unparse(AssignStmtNode.unparse804,24248
+    private AssignNode myAssign;AssignStmtNode.myAssign811,24425
+class PostIncStmtNode 814,24461
+    public PostIncStmtNode(PostIncStmtNode.PostIncStmtNode815,24502
+    public void nameAnalysis(PostIncStmtNode.nameAnalysis823,24691
+    public boolean typeCheck(PostIncStmtNode.typeCheck827,24786
+    public void unparse(PostIncStmtNode.unparse832,24841
+    private ExpNode myExp;PostIncStmtNode.myExp839,24998
+class PostDecStmtNode 842,25028
+    public PostDecStmtNode(PostDecStmtNode.PostDecStmtNode843,25069
+    public void nameAnalysis(PostDecStmtNode.nameAnalysis851,25254
+    public boolean typeCheck(PostDecStmtNode.typeCheck855,25349
+    public void unparse(PostDecStmtNode.unparse860,25433
+    private ExpNode myExp;PostDecStmtNode.myExp867,25590
+class ReadStmtNode 870,25620
+    public ReadStmtNode(ReadStmtNode.ReadStmtNode871,25658
+    public void nameAnalysis(ReadStmtNode.nameAnalysis879,25836
+    public boolean typeCheck(ReadStmtNode.typeCheck883,25935
+    public void unparse(ReadStmtNode.unparse888,26019
+    private ExpNode myExp;ReadStmtNode.myExp896,26254
+class WriteStmtNode 899,26284
+    public WriteStmtNode(WriteStmtNode.WriteStmtNode900,26323
+    public void nameAnalysis(WriteStmtNode.nameAnalysis908,26506
+    public boolean typeCheck(WriteStmtNode.typeCheck912,26601
+    public void unparse(WriteStmtNode.unparse917,26685
+    private ExpNode myExp;WriteStmtNode.myExp925,26869
+class IfStmtNode 928,26899
+    public IfStmtNode(IfStmtNode.IfStmtNode929,26935
+    public void nameAnalysis(IfStmtNode.nameAnalysis943,27295
+    public boolean typeCheck(IfStmtNode.typeCheck957,27773
+    public void unparse(IfStmtNode.unparse962,27857
+    private ExpNode myExp;IfStmtNode.myExp974,28175
+    private DeclListNode myDeclList;IfStmtNode.myDeclList975,28202
+    private StmtListNode myStmtList;IfStmtNode.myStmtList976,28239
+class IfElseStmtNode 979,28279
+    public IfElseStmtNode(IfElseStmtNode.IfElseStmtNode980,28319
+    public void nameAnalysis(IfElseStmtNode.nameAnalysis1001,28959
+    public boolean typeCheck(IfElseStmtNode.typeCheck1025,29836
+    public void unparse(IfElseStmtNode.unparse1030,29920
+    private ExpNode myExp;IfElseStmtNode.myExp1048,30455
+    private DeclListNode myThenDeclList;IfElseStmtNode.myThenDeclList1049,30482
+    private StmtListNode myThenStmtList;IfElseStmtNode.myThenStmtList1050,30523
+    private StmtListNode myElseStmtList;IfElseStmtNode.myElseStmtList1051,30564
+    private DeclListNode myElseDeclList;IfElseStmtNode.myElseDeclList1052,30605
+class WhileStmtNode 1055,30649
+    public WhileStmtNode(WhileStmtNode.WhileStmtNode1056,30688
+    public void nameAnalysis(WhileStmtNode.nameAnalysis1070,31051
+    public boolean typeCheck(WhileStmtNode.typeCheck1084,31529
+    public void unparse(WhileStmtNode.unparse1089,31613
+    private ExpNode myExp;WhileStmtNode.myExp1101,31934
+    private DeclListNode myDeclList;WhileStmtNode.myDeclList1102,31961
+    private StmtListNode myStmtList;WhileStmtNode.myStmtList1103,31998
+class CallStmtNode 1106,32038
+    public CallStmtNode(CallStmtNode.CallStmtNode1107,32076
+    public void nameAnalysis(CallStmtNode.nameAnalysis1115,32269
+    public boolean typeCheck(CallStmtNode.typeCheck1119,32361
+    public void unparse(CallStmtNode.unparse1124,32446
+    private CallExpNode myCall;CallStmtNode.myCall1131,32607
+class ReturnStmtNode 1134,32642
+    public ReturnStmtNode(ReturnStmtNode.ReturnStmtNode1135,32682
+    public void nameAnalysis(ReturnStmtNode.nameAnalysis1144,32892
+    public boolean typeCheck(ReturnStmtNode.typeCheck1150,33026
+    public void unparse(ReturnStmtNode.unparse1155,33110
+    private ExpNode myExp;ReturnStmtNode.myExp1166,33361
+abstract class ExpNode 1173,33587
+    public void nameAnalysis(ExpNode.nameAnalysis1177,33691
+    public Type expReturnType(ExpNode.expReturnType1184,33940
+    public boolean typeCheck(ExpNode.typeCheck1186,33988
+    public IdNode getExpFirstIdNode(ExpNode.getExpFirstIdNode1191,34114
+class IntLitNode 1197,34181
+    public IntLitNode(IntLitNode.IntLitNode1198,34216
+    public void unparse(IntLitNode.unparse1204,34370
+    private int myLineNum;IntLitNode.myLineNum1208,34457
+    private int myCharNum;IntLitNode.myCharNum1209,34484
+    private int myIntVal;IntLitNode.myIntVal1210,34511
+class StringLitNode 1213,34540
+    public StringLitNode(StringLitNode.StringLitNode1214,34578
+    public void unparse(StringLitNode.unparse1220,34738
+    private int myLineNum;StringLitNode.myLineNum1224,34825
+    private int myCharNum;StringLitNode.myCharNum1225,34852
+    private String myStrVal;StringLitNode.myStrVal1226,34879
+class TrueNode 1229,34911
+    public TrueNode(TrueNode.TrueNode1230,34944
+    public void unparse(TrueNode.unparse1235,35057
+    private int myLineNum;TrueNode.myLineNum1239,35142
+    private int myCharNum;TrueNode.myCharNum1240,35169
+class FalseNode 1243,35199
+    public FalseNode(FalseNode.FalseNode1244,35233
+    public void unparse(FalseNode.unparse1250,35348
+    private int myLineNum;FalseNode.myLineNum1254,35434
+    private int myCharNum;FalseNode.myCharNum1255,35461
+class IdNode 1258,35491
+    public IdNode(IdNode.IdNode1259,35522
+    public void link(IdNode.link1268,35732
+    public String name(IdNode.name1275,35850
+    public SemSym sym(IdNode.sym1282,35979
+    public int lineNum(IdNode.lineNum1289,36097
+    public int charNum(IdNode.charNum1296,36220
+    public void nameAnalysis(IdNode.nameAnalysis1306,36449
+    public Type expReturnType(IdNode.expReturnType1315,36706
+    public IdNode getExpFirstIdNode(IdNode.getExpFirstIdNode1319,36771
+    public void typeCheckError(IdNode.typeCheckError1323,36831
+    public boolean typeCheck(IdNode.typeCheck1327,36924
+    public void unparse(IdNode.unparse1331,36977
+    private int myLineNum;IdNode.myLineNum1338,37143
+    private int myCharNum;IdNode.myCharNum1339,37170
+    private String myStrVal;IdNode.myStrVal1340,37197
+    private SemSym mySym;IdNode.mySym1341,37226
+class DotAccessExpNode 1344,37255
+    public DotAccessExpNode(DotAccessExpNode.DotAccessExpNode1345,37296
+    public SemSym sym(DotAccessExpNode.sym1354,37502
+    public int lineNum(DotAccessExpNode.lineNum1362,37716
+    public int charNum(DotAccessExpNode.charNum1370,37935
+    public void nameAnalysis(DotAccessExpNode.nameAnalysis1383,38368
+    public IdNode getID(DotAccessExpNode.getID1472,41925
+    public IdNode getExpFirstIdNode(DotAccessExpNode.getExpFirstIdNode1476,41973
+    public Type expReturnType(DotAccessExpNode.expReturnType1483,42158
+    public boolean typeCheck(DotAccessExpNode.typeCheck1487,42228
+    public void unparse(DotAccessExpNode.unparse1491,42281
+    private ExpNode myLoc;DotAccessExpNode.myLoc1498,42434
+    private IdNode myId;DotAccessExpNode.myId1499,42465
+    private SemSym mySym;DotAccessExpNode.mySym1500,42490
+    private boolean badAccess;DotAccessExpNode.badAccess1501,42556
+class AssignNode 1504,42632
+    public AssignNode(AssignNode.AssignNode1505,42667
+    public void nameAnalysis(AssignNode.nameAnalysis1515,42896
+    public boolean typeCheck(AssignNode.typeCheck1520,43023
+    public Type expReturnType(AssignNode.expReturnType1575,44531
+    public IdNode getExpFirstIdNode(AssignNode.getExpFirstIdNode1586,44807
+    public void unparse(AssignNode.unparse1590,44888
+    private ExpNode myLhs;AssignNode.myLhs1599,45126
+    private ExpNode myExp;AssignNode.myExp1600,45153
+class CallExpNode 1603,45183
+    public CallExpNode(CallExpNode.CallExpNode1604,45219
+    public CallExpNode(CallExpNode.CallExpNode1609,45331
+    public void nameAnalysis(CallExpNode.nameAnalysis1619,45591
+    public IdNode getExpFirstIdNode(CallExpNode.getExpFirstIdNode1624,45725
+    public Type expReturnType(CallExpNode.expReturnType1628,45785
+    public boolean typeCheck(CallExpNode.typeCheck1632,45847
+    public void unparse(CallExpNode.unparse1637,45925
+    private IdNode myId;CallExpNode.myId1647,46151
+    private ExpListNode myExpList;CallExpNode.myExpList1648,46176
+abstract class UnaryExpNode 1651,46232
+    public UnaryExpNode(UnaryExpNode.UnaryExpNode1652,46278
+    public void nameAnalysis(UnaryExpNode.nameAnalysis1660,46460
+    protected ExpNode myExp;UnaryExpNode.myExp1665,46572
+abstract class BinaryExpNode 1668,46604
+    public BinaryExpNode(BinaryExpNode.BinaryExpNode1669,46651
+    public void nameAnalysis(BinaryExpNode.nameAnalysis1679,46889
+    protected ExpNode myExp1;BinaryExpNode.myExp11685,47038
+    protected ExpNode myExp2;BinaryExpNode.myExp21686,47068
+class UnaryMinusNode 1693,47280
+    public UnaryMinusNode(UnaryMinusNode.UnaryMinusNode1694,47324
+    public void unparse(UnaryMinusNode.unparse1698,47392
+class NotNode 1705,47528
+    public NotNode(NotNode.NotNode1706,47565
+    public void unparse(NotNode.unparse1710,47626
+class PlusNode 1721,47942
+    public PlusNode(PlusNode.PlusNode1722,47981
+    public void unparse(PlusNode.unparse1726,48065
+class MinusNode 1735,48255
+    public MinusNode(MinusNode.MinusNode1736,48295
+    public void unparse(MinusNode.unparse1740,48380
+class TimesNode 1749,48570
+    public TimesNode(TimesNode.TimesNode1750,48610
+    public void unparse(TimesNode.unparse1754,48695
+class DivideNode 1763,48885
+    public DivideNode(DivideNode.DivideNode1764,48926
+    public void unparse(DivideNode.unparse1768,49012
+class AndNode 1777,49202
+    public AndNode(AndNode.AndNode1778,49240
+    public void unparse(AndNode.unparse1782,49323
+class OrNode 1791,49514
+    public OrNode(OrNode.OrNode1792,49551
+    public void unparse(OrNode.unparse1796,49633
+class EqualsNode 1805,49824
+    public EqualsNode(EqualsNode.EqualsNode1806,49865
+    public Type expReturnType(EqualsNode.expReturnType1810,49951
+    public boolean typeCheck(EqualsNode.typeCheck1814,50015
+    public void unparse(EqualsNode.unparse1857,51400
+class NotEqualsNode 1866,51591
+    public NotEqualsNode(NotEqualsNode.NotEqualsNode1867,51635
+    public Type expReturnType(NotEqualsNode.expReturnType1871,51724
+    public void unparse(NotEqualsNode.unparse1875,51788
+class LessNode 1884,51979
+    public LessNode(LessNode.LessNode1885,52018
+    public void unparse(LessNode.unparse1889,52102
+class GreaterNode 1898,52292
+    public GreaterNode(GreaterNode.GreaterNode1899,52334
+    public void unparse(GreaterNode.unparse1903,52421
+class LessEqNode 1912,52611
+    public LessEqNode(LessEqNode.LessEqNode1913,52652
+    public void unparse(LessEqNode.unparse1917,52738
+class GreaterEqNode 1926,52929
+    public GreaterEqNode(GreaterEqNode.GreaterEqNode1927,52973
+    public void unparse(GreaterEqNode.unparse1931,53062
+
+DuplicateSymException.java,40
+public class DuplicateSymException 1,0
+
+EmptySymTableException.java,41
+public class EmptySymTableException 1,0
+
+ErrMsg.java,194
+class ErrMsg 6,89
+	private static boolean err ErrMsg.err7,104
+    static void fatal(ErrMsg.fatal15,372
+    static void warn(ErrMsg.warn26,763
+	static boolean getErr(ErrMsg.getErr33,947
+
+P5.java,1533
+public class P5 15,405
+    FileReader inFile;P5.inFile16,423
+    private PrintWriter outFile;P5.outFile17,446
+    private static PrintStream outStream P5.outStream18,479
+    public static final int RESULT_CORRECT P5.RESULT_CORRECT20,536
+    public static final int RESULT_SYNTAX_ERROR P5.RESULT_SYNTAX_ERROR21,584
+    public static final int RESULT_TYPE_ERROR P5.RESULT_TYPE_ERROR22,637
+    public static final int RESULT_OTHER_ERROR P5.RESULT_OTHER_ERROR23,688
+    public P5(P5.P529,889
+    private P5(P5.P539,1204
+    public void setInfile(P5.setInfile61,1732
+    public void setOutfile(P5.setOutfile73,2063
+    public void cleanup(P5.cleanup86,2488
+    private void pukeAndDie(P5.pukeAndDie108,3047
+    private void pukeAndDie(P5.pukeAndDie117,3309
+    private Symbol parseCFG(P5.parseCFG128,3637
+    public int process(P5.process137,3798
+    public void run(P5.run157,4249
+    private class BadInfileException P5.BadInfileException174,4623
+	private String message;P5.BadInfileException.message176,4731
+	public BadInfileException(P5.BadInfileException.BadInfileException178,4759
+	    public String getMessage(P5.BadInfileException.getMessage184,4925
+    private class BadOutfileException P5.BadOutfileException189,4990
+	private String message;P5.BadOutfileException.message191,5099
+	public BadOutfileException(P5.BadOutfileException.BadOutfileException193,5127
+	    public String getMessage(P5.BadOutfileException.getMessage199,5294
+    public static void main(P5.main204,5359
+
+SemSym.java,1119
+public class SemSym 7,115
+    private Type type;SemSym.type8,137
+    public SemSym(SemSym.SemSym10,165
+    public Type getType(SemSym.getType14,233
+    public String toString(SemSym.toString18,293
+class FnSym 28,555
+    private Type returnType;FnSym.returnType30,602
+    private int numParams;FnSym.numParams31,631
+    private List<Type> paramTypes;FnSym.paramTypes32,658
+    public FnSym(FnSym.FnSym34,698
+    public void addFormals(FnSym.addFormals40,837
+    public Type getReturnType(FnSym.getReturnType44,915
+    public int getNumParams(FnSym.getNumParams48,983
+    public List<Type> getParamTypes(FnSym.getParamTypes52,1048
+    public String toString(FnSym.toString56,1122
+class StructSym 79,1708
+    private IdNode structType;StructSym.structType81,1759
+    public StructSym(StructSym.StructSym83,1823
+    public IdNode getStructType(StructSym.getStructType88,1924
+class StructDefSym 99,2199
+    private SymTable symTab;StructDefSym.symTab101,2253
+    public StructDefSym(StructDefSym.StructDefSym103,2287
+    public SymTable getSymTable(StructDefSym.getSymTable108,2396
+
+SymTable.java,501
+public class SymTable 3,21
+    private List<SymTable.List4,45
+    private List<HashMap<String, SemSym>> list;SymTable.list4,45
+    public SymTable(SymTable.SymTable6,98
+    public void addDecl(SymTable.addDecl11,240
+    public void addScope(SymTable.addScope26,720
+    public SemSym lookupLocal(SymTable.lookupLocal30,812
+    public SemSym lookupGlobal(SymTable.lookupGlobal38,1018
+    public void removeScope(SymTable.removeScope50,1322
+    public void print(SymTable.print56,1495
+
+Type.java,2186
+abstract public class Type 5,118
+    public Type(Type.Type10,191
+    public boolean isErrorType(Type.isErrorType22,447
+    public boolean isIntType(Type.isIntType26,511
+    public boolean isBoolType(Type.isBoolType30,573
+    public boolean isVoidType(Type.isVoidType34,636
+    public boolean isStringType(Type.isStringType38,703
+    public boolean isFnType(Type.isFnType42,768
+    public boolean isStructType(Type.isStructType46,829
+    public boolean isStructDefType(Type.isStructDefType50,898
+class ErrorType 58,1129
+    public boolean isErrorType(ErrorType.isErrorType60,1161
+    public boolean equals(ErrorType.equals64,1224
+    public String toString(ErrorType.toString68,1299
+class IntType 76,1522
+    public boolean isIntType(IntType.isIntType78,1552
+    public boolean equals(IntType.equals82,1613
+    public String toString(IntType.toString86,1686
+class BoolType 94,1908
+    public boolean isBoolType(BoolType.isBoolType96,1939
+    public boolean equals(BoolType.equals100,2001
+    public String toString(BoolType.toString104,2075
+class VoidType 112,2298
+    public boolean isVoidType(VoidType.isVoidType114,2329
+    public boolean equals(VoidType.equals118,2391
+    public String toString(VoidType.toString122,2465
+class StringType 130,2690
+    public boolean isStringType(StringType.isStringType132,2723
+    public boolean equals(StringType.equals136,2787
+    public String toString(StringType.toString140,2863
+class FnType 148,3086
+    public boolean isFnType(FnType.isFnType150,3115
+    public boolean equals(FnType.equals154,3175
+    public String toString(FnType.toString158,3247
+class StructType 166,3476
+    private IdNode myId;StructType.myId167,3508
+    public StructType(StructType.StructType169,3538
+    public boolean isStructType(StructType.isStructType173,3603
+    public boolean equals(StructType.equals177,3667
+    public String toString(StructType.toString181,3743
+class StructDefType 189,3976
+    public boolean isStructDefType(StructDefType.isStructDefType191,4012
+    public boolean equals(StructDefType.equals195,4079
+    public String toString(StructDefType.toString199,4158

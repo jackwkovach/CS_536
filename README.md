@@ -33,3 +33,6 @@ Or you can compile by yourself: <br/>
 * Modify the ErrMsg class.
 * Update the Makefile used for program 3 to include any new rules needed for program 4.
 * Write two test inputs: nameErrors.cf and test.cf to test your new code.
+
+####Project 5
+* Some type check
