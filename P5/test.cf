@@ -13,13 +13,79 @@ struct space{
        int z;
 };      
 
+int f(int a, bool b){
+    return;
+}
+
+bool g(int c){
+     return 3;
+}
+
 void main(){
      int a;
      bool b;
      int c;
      struct point p;
      struct space s;
-     s.pl.p.x = b;
-     p = s;
-     point = space;
+
+     a = s();
+     a = f(p);
+     a = g(a);
+     # # + - * / ++ --
+     # a = b + c;
+     # a = b - (a == c);
+     # a = c /b;
+     # a = b / point;
+     # b++;
+     # b--;
+
+     # # < > <= >= non-bool
+     # b = b < (a == c);
+     # b = b > a;
+     # b = a <= (a > c);
+     # b = b >= (c < a);
+
+     # # ! && || non-bool
+     # b = !a;
+     # b = a && c;
+     # b = a || c;
+
+     # # if ifElse while exp non-bool
+     # if(a){
+     # 	int b;
+     # 	b = 3;
+     # }
+
+     # if(a){
+     # 	int b;
+     # 	b = 3;
+     # }else{
+     # 	int b;
+     # 	b = 3;
+     # }
+
+     # while(a == c){
+     # 	int b;
+     # 	b = 3;
+     # }
+
+     # # '==' '!=' error types
+     # b = s == p;
+     # b = f == g;
+     # b = f() == g();
+     # b = point == space;
+     # b = a == b;
+
+     # b = s != p;
+     # b = f != g;
+     # b = f() != g();
+     # b = point != space;
+     # b = a != b;
+
+     # # '=' errors types
+     # s.pl.p.x = b;
+     # p = s;
+     # point = space;
+     # f = g;
+
 }
