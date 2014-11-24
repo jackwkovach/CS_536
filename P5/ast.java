@@ -187,8 +187,10 @@ class DeclListNode extends ASTnode {
 	boolean result = true;
 	for(DeclNode node : myDecls){
 	    if(node instanceof FnDeclNode){
-		if(((FnDeclNode)node).typeCheck() == false)
+		if(((FnDeclNode)node).typeCheck() == false){
+
 		    result = false;
+		}
 	    }else{
 		continue;
 	    }
@@ -321,8 +323,9 @@ class StmtListNode extends ASTnode {
 	for(StmtNode stmt : myStmts){
 	    if(stmt instanceof ReturnStmtNode)
 		return ((ReturnStmtNode)stmt).returnReturnExpNode();
+	    // note: this could also return null, e.g returnExpNode is just "return ;"
 	}
-	return null; // no return statement inside
+	return new NoReturn(); // no return statement inside
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -563,6 +566,7 @@ class FnDeclNode extends DeclNode {
     public boolean typeCheck(){
     	// TODO: You'll have to change this
 	// no need to check formalList, the use is checked in other fnDecl's fnBody
+	
 	boolean result = true;
 	// check body
 	result = result && myBody.typeCheck();
@@ -572,7 +576,7 @@ class FnDeclNode extends DeclNode {
 	Type fnReturnType = myId.sym().getType(); // type the function declared to return
 
 	if(fnReturnType instanceof VoidType){ //  void
-	    echo("fnTypeCheck, Checking void type", myId.sym().toString());
+	    // echo("fnTypeCheck, Checking void type", myId.sym().toString());
 
 	    if(callReturnExp != null){// returns something... which shouldn't
 		IdNode i = callReturnExp.getExpFirstIdNode();
@@ -581,11 +585,11 @@ class FnDeclNode extends DeclNode {
 	    }
 	}
 	else{ // it is non-void
-	    echo("fnTypeCheck, Checking non-void type", myId.sym().toString());
+	    // echo("fnTypeCheck, Checking non-void type", myId.sym().toString());
 	    if(callReturnExp == null){ // plain return in non-void function
 		ErrMsg.fatal(0,0,"Missing return value");
 	    	result = false;
-	    }else{ // it returns something, check to see if types are identical
+	    }else if(!(callReturnExp instanceof NoReturn)){ // it returns something, check to see if types are identical
 		Type callReturnType = callReturnExp.expReturnType();
 		String fnReturnTypeName = fnReturnType.toString();
 		String callReturnTypeName = callReturnType.toString();
@@ -595,6 +599,7 @@ class FnDeclNode extends DeclNode {
 		    result = false;
 		}
 	    }
+	    // no return expression at all
 	}
 
 	return result;
@@ -956,7 +961,27 @@ class ReadStmtNode extends StmtNode {
     }    
     
     public boolean typeCheck(){
-	return myExp.typeCheck();
+	boolean result = true;
+	if(myExp.typeCheck()){
+	    Type t = myExp.expReturnType();
+	    IdNode i = myExp.getExpFirstIdNode();
+	    if(t instanceof FnType){
+		i.typeCheckError("Attempt to read a function");
+		result = false;
+	    }else if(t instanceof StructDefType){
+		i.typeCheckError("Attempt to read a struct name");
+		result = false;
+	    }else{ // id or normal type
+		if(i.sym().getType() instanceof StructType){
+		    i.typeCheckError("Attempt to read a struct variable");
+		    result = false;		    
+		}
+	    }
+	}else{
+	    result = false;
+	}
+
+	return result;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -982,10 +1007,28 @@ class WriteStmtNode extends StmtNode {
     public void nameAnalysis(SymTable symTab) {
         myExp.nameAnalysis(symTab);
     }
-    
+
     public boolean typeCheck(){
-	return false;
-	// return myExp.typeCheck();
+	boolean result = true;
+	if(myExp.typeCheck()){
+	    Type t = myExp.expReturnType();
+		IdNode i = myExp.getExpFirstIdNode();
+	    if(t instanceof FnType){
+		i.typeCheckError("Attempt to write a function");
+		result = false;
+	    }else if(t instanceof StructDefType){
+		i.typeCheckError("Attempt to write a struct name");
+		result = false;
+	    }else{ // id or normal type
+		if(i.sym().getType() instanceof StructType){
+		i.typeCheckError("Attempt to write a struct variable");
+		result = false;		    
+		}
+	    }
+	}else{
+	    result = false;
+	}
+	return result;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1295,15 +1338,36 @@ abstract class ExpNode extends ASTnode {
      */
     abstract public Type expReturnType();
 
-    public boolean typeCheck(){return false;}
+    public boolean typeCheck(){return true;}
 
     /**
      * Return the Idnode that is at the leftmost of an expNode
      */
-    public IdNode getExpFirstIdNode(){
-	return null;
+    abstract public IdNode getExpFirstIdNode();
+
+}
+
+/**
+ * used to deal with no return statement...
+ * not elegant at all
+ */
+class NoReturn extends ExpNode{
+    public NoReturn(){}
+
+    public Type expReturnType(){
+	return new VoidType();
     }
+
+    public IdNode getExpFirstIdNode(){
+	IdNode i = new IdNode(0, 0, "void");
+	SemSym s = new SemSym(new VoidType());
+	i.link(s);
+	return i;
+    }
+
+    public void unparse(PrintWriter p, int indent){
     
+    }
 }
 
 class IntLitNode extends ExpNode {
@@ -1315,6 +1379,13 @@ class IntLitNode extends ExpNode {
 
     public Type expReturnType(){
 	return new IntType();
+    }
+
+    public IdNode getExpFirstIdNode(){
+	IdNode i = new IdNode(myLineNum, myCharNum, "int");
+	SemSym s = new SemSym(new IntType());
+	i.link(s);
+	return i;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1337,6 +1408,13 @@ class StringLitNode extends ExpNode {
 	return new StringType();
     }
 
+    public IdNode getExpFirstIdNode(){
+	IdNode i = new IdNode(myLineNum, myCharNum, "string");
+	SemSym s = new SemSym(new StringType());
+	i.link(s);
+	return i;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print(myStrVal);
     }
@@ -1356,6 +1434,13 @@ class TrueNode extends ExpNode {
 	return new BoolType();
     }
 
+    public IdNode getExpFirstIdNode(){
+	IdNode i = new IdNode(myLineNum, myCharNum, "true");
+	SemSym s = new SemSym(new BoolType());
+	i.link(s);
+	return i;
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("true");
     }
@@ -1372,6 +1457,13 @@ class FalseNode extends ExpNode {
 
     public Type expReturnType(){
 	return new BoolType();
+    }
+
+    public IdNode getExpFirstIdNode(){
+	IdNode i = new IdNode(myLineNum, myCharNum, "false");
+	SemSym s = new SemSym(new BoolType());
+	i.link(s);
+	return i;
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1840,7 +1932,6 @@ abstract class BinaryExpNode extends ExpNode {
         myExp1 = exp1;
         myExp2 = exp2;
     }
-
     /**
      * nameAnalysis
      * Given a symbol table symTab, perform name analysis on this node's 
@@ -1851,66 +1942,75 @@ abstract class BinaryExpNode extends ExpNode {
         myExp2.nameAnalysis(symTab);
     }
 
-    public Type expReturnType(){
-	return myExp1.expReturnType();
-    }
+    // public Type expReturnType(){
+    // 	return myExp1.expReturnType();
+    // }
 
     public IdNode getExpFirstIdNode(){
 	return myExp1.getExpFirstIdNode();
     }    
 
     public boolean typeCheck(){
+
 	if((this instanceof PlusNode)||
 	   (this instanceof MinusNode)||
 	   (this instanceof TimesNode)||
 	   (this instanceof DivideNode)){
-	    if(myExp1.typeCheck() && myExp2.typeCheck()){
-		Type i1 = myExp1.expReturnType();
-		Type i2 = myExp2.expReturnType();
-		boolean result = true;
-		if(!(i1 instanceof IntType)){
-		    IdNode i = myExp1.getExpFirstIdNode();
-		    i.typeCheckError("Arithmetic operator applied to non-numeric operand");
-		    result = false;
-		}
-		if(!(i2 instanceof IntType)){
-		    IdNode i = myExp2.getExpFirstIdNode();
-		    i.typeCheckError("Arithmetic operator applied to non-numeric operand");
-		}
-		return result;
+	    boolean result = true;
+	    if(myExp1.typeCheck() == false)
+		result = false;
+	    
+	    if(myExp2.typeCheck() == false)
+		result = false;
 
-	    }else{
-		return false;
+	    Type i1 = myExp1.expReturnType();
+	    Type i2 = myExp2.expReturnType();
+
+	    if(!(i1 instanceof IntType)){
+		IdNode i = myExp1.getExpFirstIdNode();
+		i.typeCheckError("Arithmetic operator applied to non-numeric operand");
+		result = false;
+	    }else if(!(i2 instanceof IntType)){
+		IdNode i = myExp2.getExpFirstIdNode();
+		i.typeCheckError("Arithmetic operator applied to non-numeric operand");
+		result = false;
 	    }
+
+	    return result;
 
 	}
 	else if((this instanceof LessEqNode)||
 	   (this instanceof GreaterEqNode)||
 	   (this instanceof LessNode)||
 	   (this instanceof GreaterNode)){
+	    boolean result = true;
+	    if(myExp1.typeCheck() == false)
+		result = false;
+	    
+	    if(myExp2.typeCheck() == false)
+		result = false;
 
-	    if(myExp1.typeCheck() && myExp2.typeCheck()){
-		Type i1 = myExp1.expReturnType();
-		Type i2 = myExp2.expReturnType();
-		boolean result = true;
-		if(!(i1 instanceof IntType)){
-		    IdNode i = myExp1.getExpFirstIdNode();
-		    i.typeCheckError("Relational operator applied to non-numeric operand");
-		    result = false;
-		}
-		if(!(i2 instanceof IntType)){
-		    IdNode i = myExp2.getExpFirstIdNode();
-		    i.typeCheckError("Relational operator applied to non-numeric operand");
-		}
-		return result;
+	    Type i1 = myExp1.expReturnType();
+	    Type i2 = myExp2.expReturnType();
 
-	    }else{
-		return false;
+	    if(!(i1 instanceof IntType)){
+		IdNode i = myExp1.getExpFirstIdNode();
+		i.typeCheckError("Relational operator applied to non-numeric operand");
+		result = false;
+	    }else if(!(i2 instanceof IntType)){
+		IdNode i = myExp2.getExpFirstIdNode();
+		i.typeCheckError("Relational operator applied to non-numeric operand");
+		result = false;
 	    }
+
+	    return result;
 
 	}
 	else if((this instanceof AndNode) || (this instanceof OrNode)){
-	    if(myExp1.typeCheck() && myExp2.typeCheck()){
+
+	    boolean checkLhs = myExp1.typeCheck();
+	    boolean checkRhs = myExp2.typeCheck();
+	    if(checkLhs == true && checkRhs == true){
 		Type b1 = myExp1.expReturnType();
 		Type b2 = myExp2.expReturnType();
 		boolean result = true;
@@ -1928,9 +2028,47 @@ abstract class BinaryExpNode extends ExpNode {
 	    }else{
 		return false;
 	    }
+	}else if((this instanceof EqualsNode)||(this instanceof NotEqualsNode)){
+	    boolean result = true;
+
+	    // check two expNode
+	    if(myExp1.typeCheck() == false)
+		result = false;
+	    if(myExp2.typeCheck() == false)
+		result = false;
+	    // check type between == and !=
+	    Type lhsType = myExp1.expReturnType();
+	    Type rhsType = myExp2.expReturnType();
+	    String lhsTypeName = lhsType.toString();
+	    String rhsTypeName = rhsType.toString();
+	    // echo("equality lhs: ", lhsTypeName);
+	    // echo("equality rhs: ", rhsTypeName);
+
+	    IdNode lhsId; // used to indicate error location
+	    lhsId = myExp1.getExpFirstIdNode();
+	    if(lhsTypeName.equals(rhsTypeName)){
+		// check for A = B, a = b, f = g
+		if(lhsTypeName.equals("function")){
+		    lhsId.typeCheckError("Equality operator applied to functions");
+		    result = false;
+		}else if(lhsTypeName.equals("struct")){
+		    // echo("lhs = rhs", "primitive Struct");
+		    lhsId.typeCheckError("Equality operator applied to struct names");
+		    result = false;
+		}	    
+	    }else{	    // mismatch type
+		if((lhsType instanceof StructType) && (rhsType instanceof StructType)){
+		    lhsId.typeCheckError("Equality operator applied to struct variables");
+		    // rhsId.typeCheckError("Equality operator applied to struct variables");
+		}else{
+		    lhsId.typeCheckError("Type mismatch");
+		}
+		result = false;
+	    }
+	    return result;
 	}else{
 	    return false;
-	} 
+	}
     }
 
     // two kids
@@ -1947,6 +2085,22 @@ class UnaryMinusNode extends UnaryExpNode {
         super(exp);
     }
 
+    public boolean typeCheck(){
+	if(myExp.typeCheck()){
+	    Type b = myExp.expReturnType();
+	    if(b instanceof IntType){
+		return true;
+	    }
+	    else{
+		IdNode i = myExp.getExpFirstIdNode();
+		i.typeCheckError("Arithmetic operator applied to non-numeric operand");
+		return false;
+	    }
+	}else{
+	    return false;
+	}
+    }
+
     public void unparse(PrintWriter p, int indent) {
         p.print("(-");
         myExp.unparse(p, 0);
@@ -1957,6 +2111,10 @@ class UnaryMinusNode extends UnaryExpNode {
 class NotNode extends UnaryExpNode {
     public NotNode(ExpNode exp) {
         super(exp);
+    }
+
+    public Type expReturnType(){
+    	return new BoolType();
     }
 
     public boolean typeCheck(){
@@ -2103,45 +2261,6 @@ class EqualsNode extends BinaryExpNode {
 	return new BoolType();
     }
 
-    public boolean typeCheck(){
-	Type lhsType;
-	Type rhsType;
-
-	if(myExp1.typeCheck() == true && myExp2.typeCheck() == true){
-	    lhsType = myExp1.expReturnType();
-	    rhsType = myExp2.expReturnType();
-
-	    String lhsTypeName = lhsType.toString();
-	    String rhsTypeName = rhsType.toString();
-	    // echo("EqualsNode-lhs", lhsTypeName);
-	    // echo("EqualsNode-rhs", rhsTypeName);
-	    
-	    IdNode lhsId;
-	    lhsId = myExp1.getExpFirstIdNode();
-	    if(lhsTypeName.equals(rhsTypeName)){
-		// check for A = B, a = b, f = g
-		if(lhsTypeName.equals("function")){
-		    lhsId.typeCheckError("Equality operator applied to functionsEquality operator applied to functions");
-		    return false;
-		}else if(lhsTypeName.equals("struct")){
-		    // echo("lhs = rhs", "primitive Struct");
-		    lhsId.typeCheckError("Equality operator applied to struct names");
-		    return false;
-		}	    
-		return true;
-	    }else{	    // mismatch type
-		if((lhsType instanceof StructType) && (rhsType instanceof StructType)){
-		    lhsId.typeCheckError("Equality operator applied to struct variables");
-		}else{
-		    lhsId.typeCheckError("Type mismatch");
-		}
-		return false;
-	    }
-	}else{
-	    return false;
-	}
-    }
-
     public void unparse(PrintWriter p, int indent) {
         p.print("(");
         myExp1.unparse(p, 0);
@@ -2158,45 +2277,6 @@ class NotEqualsNode extends BinaryExpNode {
 
     public Type expReturnType(){
 	return new BoolType();
-    }
-
-    public boolean typeCheck(){
-	Type lhsType;
-	Type rhsType;
-	// according to CFLAT.cup, myLhs is either a loc i.e ID or DotAccess
-	if(myExp1.typeCheck() == true && myExp2.typeCheck() == true){
-	    lhsType = myExp1.expReturnType();
-	    rhsType = myExp2.expReturnType();
-
-	    String lhsTypeName = lhsType.toString();
-	    String rhsTypeName = rhsType.toString();
-	    // echo("EqualsNode-lhs", lhsTypeName);
-	    // echo("EqualsNode-rhs", rhsTypeName);
-	    
-	    IdNode lhsId;
-	    lhsId = myExp1.getExpFirstIdNode();
-	    if(lhsTypeName.equals(rhsTypeName)){
-		// check for A = B, a = b, f = g
-		if(lhsTypeName.equals("function")){
-		    lhsId.typeCheckError("Equality operator applied to functionsEquality operator applied to functions");
-		    return false;
-		}else if(lhsTypeName.equals("struct")){
-		    // echo("lhs = rhs", "primitive Struct");
-		    lhsId.typeCheckError("Equality operator applied to struct names");
-		    return false;
-		}	    
-		return true;
-	    }else{	    // mismatch type
-		if((lhsType instanceof StructType) && (rhsType instanceof StructType)){
-		    lhsId.typeCheckError("Equality operator applied to struct variables");
-		}else{
-		    lhsId.typeCheckError("Type mismatch");
-		}
-		return false;
-	    }
-	}else{
-	    return false;
-	}
     }
 
     public void unparse(PrintWriter p, int indent) {

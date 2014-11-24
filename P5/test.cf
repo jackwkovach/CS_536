@@ -18,7 +18,9 @@ int f(int a, bool b){
 }
 
 bool g(int c){
-     return 3;
+     int d;
+     struct plane p;
+     return "hello";
 }
 
 void main(){
@@ -28,27 +30,56 @@ void main(){
      struct point p;
      struct space s;
 
-     a = s();
-     a = f(p);
-     a = g(a);
-     # # + - * / ++ --
-     # a = b + c;
-     # a = b - (a == c);
-     # a = c /b;
-     # a = b / point;
+     # # only tested cout here as cin implements the same logic, the only difference is output string
+     # # pure cout, cin errors
+     # cout << f;
+     # cout << point;
+     # cout << p;
+     # # cout mixes + - * /, it won't cascade errors
+     # cout << (f + 4);
+     cout << b - (4 == s);
+     cout << b + (c != b);
+     cout << a / (a == c);
+     cout << b * (4 < s);
+     cout << point / (c > b);
+     cout << a * (a <= c);
+     cout << s - (p >= point); 
+     # cout << c /b;
+     # cout << b / point;
+     # cout << -f;
+     # # cout mixes < > >= <=
+     # cout << b < (a == c);
+     # cout << b > a;
+     # cout << a <= (a > c);
+     # cout << a >= (c < a);
+
+     # # cout mixes ! && || non-bool
+     # cout << !a;
+     # cout << ((( a && c)));
+     # cout << a || c;
+
      # b++;
      # b--;
 
-     # # < > <= >= non-bool
-     # b = b < (a == c);
-     # b = b > a;
-     # b = a <= (a > c);
-     # b = b >= (c < a);
+     # # pure '==' '!=' error types, tested == only as != is the same 
+     # b = s == p;
+     # b = f == g;
+     # b = f() == g();
+     # b = point == space;
+     # b = a == b;
 
-     # # ! && || non-bool
-     # b = !a;
-     # b = a && c;
-     # b = a || c;
+     # # '=' errors types
+     # s.pl.p.x = b;
+     # p = s;
+     # point = space;
+     # f = g;
+
+
+     
+     # # Call
+     # a = s();
+     # a = f(p);
+     # a = g(a);
 
      # # if ifElse while exp non-bool
      # if(a){
@@ -68,24 +99,5 @@ void main(){
      # 	int b;
      # 	b = 3;
      # }
-
-     # # '==' '!=' error types
-     # b = s == p;
-     # b = f == g;
-     # b = f() == g();
-     # b = point == space;
-     # b = a == b;
-
-     # b = s != p;
-     # b = f != g;
-     # b = f() != g();
-     # b = point != space;
-     # b = a != b;
-
-     # # '=' errors types
-     # s.pl.p.x = b;
-     # p = s;
-     # point = space;
-     # f = g;
 
 }
