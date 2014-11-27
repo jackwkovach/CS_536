@@ -1,0 +1,105 @@
+struct point{
+       int x;
+       int y;
+};
+
+struct plane{
+       struct point p;
+       int z;
+};
+
+struct space{
+       struct plane pl;
+       int z;
+};      
+
+void f(int a, bool b){
+    return;
+}
+
+bool g(int c){
+     int d;
+     struct plane p;
+     return "hello";
+}
+
+void main(){
+     int a;
+     bool b;
+     int c;
+     struct point p;
+     struct space s;
+
+     # only tested cout here as cin implements the same logic, the only difference is output string
+     # pure cout, cin errors
+     cout << f;
+     cout << point;
+     cout << p;
+     # cout mixes + - * /, it won't cascade errors
+     cout << (f + 4);
+     cout << b - (4 == s);
+     cout << b + (c != b);
+     cout << a / (a == (b + true));
+     cout << b * (4 < s);
+     cout << point / (c > b);
+     cout << a * (a <= c);
+     cout << s - (p >= point); 
+     cout << s - (point >= p);
+     cout << b > ( p + point);
+     cout << c /b;
+     cout << b / point;
+     cout << -f;
+     # cout mixes < > >= <=
+     cout << b < (a == c);
+     cout << b > a;
+     cout << a <= (a > c);
+     cout << a >= (c < a);
+
+     # cout mixes ! && || non-bool
+     cout << !a;
+     cout << ((( a && c)));
+     cout << a || c;
+
+     b++;
+     b--;
+
+     # pure '==' '!=' error types, tested == only as != is the same 
+     b = s == p;
+     b = f == g;
+     b = f() == g();
+     b = point == space;
+     b = a == b;
+
+     # '=' errors types
+     s.pl.p.x = b;
+     p = s;
+     point = space;
+     f = g;
+
+
+     
+     # Call
+     a = s();
+     a = f(p);
+     a = g(a);
+
+     # if ifElse while exp non-bool
+     if(a){
+     	int b;
+     	b = 3;
+     }
+
+     if(a){
+     	int b;
+     	b = 3;
+     }else{
+     	int b;
+     	b = 3;
+     }
+
+     while(a == c){
+     	int b;
+     	b = 3;
+     }
+
+}

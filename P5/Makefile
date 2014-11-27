@@ -40,8 +40,9 @@ ErrMsg.class: ErrMsg.java
 test:
 	java -cp $(CP) P5 test.cf test_result.out
 error:
-	java -cp $(CP) P5 nameErrors.cf nameErrors_result.out
-
+	java -cp $(CP) P5 typeErrors.cf typeErrors_result.out
+ex:
+	java -cp $(CP) P5 example.cf exampleErrors_result.out
 ###
 # clean
 ###

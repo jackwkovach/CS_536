@@ -245,7 +245,7 @@ return new Symbol(sym.EOF);
           }
 
 "--"      { Symbol S = new Symbol(sym.MINUSMINUS, new TokenVal(yyline+1, CharNum.num));
-            CharNum.num += 2;
+            CharNum.num++;
             return S;
           }
 
