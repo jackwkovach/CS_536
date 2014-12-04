@@ -1,0 +1,15 @@
+int gi;
+int main(int a, int b){
+    int li1;
+    bool lb1;
+    bool lb2;
+
+    if(lb1){
+	int b;
+	b = 1;
+    }else{
+	b = -1;
+    }   
+
+}
+
