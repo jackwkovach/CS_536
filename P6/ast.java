@@ -163,6 +163,7 @@ class ProgramNode extends ASTnode {
     }
     
     public void unparse(PrintWriter p, int indent) {
+	echo("unparse called");
         myDeclList.unparse(p, indent);
     }
 
@@ -182,7 +183,7 @@ class DeclListNode extends ASTnode {
     public void nameAnalysis(SymTable symTab) {
         nameAnalysis(symTab, symTab);
     }
-    
+
     /**
      * nameAnalysis
      * Given a symbol table symTab and a global symbol table globalTab
@@ -213,11 +214,15 @@ class DeclListNode extends ASTnode {
 	}
 	return result;
     }
-    
-    public List<DeclNode> getDeclList(){
-	return myDecls;
-    }
 
+    public int markOffset(int start){
+	for (DeclNode node : myDecls) {
+	    start = node.markOffset(start);
+        }
+
+	return start;
+    }
+    
     public void codeGen(PrintWriter p){
 	for(DeclNode node : myDecls){
 	    node.codeGen(p);
@@ -259,8 +264,9 @@ class FormalsListNode extends ASTnode {
             SemSym sym = node.nameAnalysis(symTab);
             if (sym != null) {
 		// mark offset of each variables in formalList for codeGen
-		sym.offset = formalOffset;
-		formalOffset += 4;
+		sym.offset = formalOffset; // mark variable's offset
+		// fs.formalSpace = formalOffset + 4; // set parameter's space
+		formalOffset -= 4;
 
                 typeList.add(sym.getType());
             }
@@ -316,9 +322,23 @@ class FnBodyNode extends ASTnode {
      * - process the declaration list
      * - process the statement list
      */
-    public void nameAnalysis(SymTable symTab) {
+    public void nameAnalysis(SymTable symTab, int formalOffset) {
         myDeclList.nameAnalysis(symTab);
+
+	/**
+	 * offset start from -<paramete size + 8>
+	 */
+	int offset = formalOffset - 8;
+	offset = myDeclList.markOffset(offset);
+
         myStmtList.nameAnalysis(symTab);
+	offset = myStmtList.markOffset(offset);
+	echo("offset -->" + offset + "formalOffset -->" + formalOffset);
+
+	/**
+	 * Thus the local space for local parameters is the -offset - <parameter size + 8>
+	 */
+	this.localSpace = formalOffset - offset - 8;
     }    
 
     public boolean typeCheck(TypeNode rTypeNode){
@@ -327,10 +347,9 @@ class FnBodyNode extends ASTnode {
 
     public void codeGen(PrintWriter p){
 	// set space for local variables
-	List dl = myDeclList.getDeclList();
+	// List dl = myDeclList.getDeclList();
 	Codegen.p = p;
-	Codegen.generate("subu", "$sp", "$sp", Integer.toString(dl.size() * 4));
-
+	Codegen.generate("subu", "$sp", "$sp", this.localSpace);
 	// each stmtnode handles itself
 	myStmtList.codeGen(p);
     }
@@ -343,6 +362,7 @@ class FnBodyNode extends ASTnode {
     // 2 kids
     private DeclListNode myDeclList;
     private StmtListNode myStmtList;
+    private int localSpace;
 }
 
 class StmtListNode extends ASTnode {
@@ -367,6 +387,13 @@ class StmtListNode extends ASTnode {
 		result = false;
 	}
 	return result;
+    }
+
+    public int markOffset(int start){
+	for (StmtNode node : myStmts) {
+            start = node.markOffset(start);
+        }
+	return start;
     }
 
     public void codeGen(PrintWriter p){
@@ -433,6 +460,8 @@ abstract class DeclNode extends ASTnode {
      * Note: a formal decl needs to return a sym
      */
     abstract public SemSym nameAnalysis(SymTable symTab);
+
+    public int markOffset(int start){return start;}
 }
 
 class VarDeclNode extends DeclNode {
@@ -466,11 +495,6 @@ class VarDeclNode extends DeclNode {
         String name = myId.name();
         SemSym sym = null;
         IdNode structId = null;
-
-	// echo("varDecl local");
-	// symTab.print();
-	// echo("varDecl global");
-	// globalTab.print();
 
         if (myType instanceof VoidNode) {  // check for void type
             ErrMsg.fatal(myId.lineNum(), myId.charNum(), 
@@ -515,7 +539,7 @@ class VarDeclNode extends DeclNode {
 		}else{
 		    // this section add an offset to each variable for generating code
 		    // no need for global variables as they are referred directly
-		    sym.offset = 8 + 4 * symTab.variableInScope();
+		    // sym.offset = 8 + 4 * symTab.variableInScope();
 		}
 
 		if(sym.isGlobal)
@@ -541,6 +565,13 @@ class VarDeclNode extends DeclNode {
         return sym;
     }    
     
+    public int markOffset(int start){
+	SemSym s = myId.sym();
+	s.offset = start;
+	int size = 4; // depends on var or struct need modify for struct use
+	return start - size;
+}
+
     public void codeGen(PrintWriter p){
 	SemSym s = myId.sym();
 	if(s.isGlobal){
@@ -550,14 +581,14 @@ class VarDeclNode extends DeclNode {
 	    // p.println("\t_" + myStrVal + ":\t" + ".space " + mySym.offset);
 	    p.println("\t_" + myId.name() + ":\t" + ".space " + "4");
 	}
-
     }
 
     public void unparse(PrintWriter p, int indent) {
         doIndent(p, indent);
         myType.unparse(p, 0);
         p.print(" ");
-        p.print(myId.name());
+        // p.print(myId.name());
+	myId.unparse(p,0);
         p.println(";");
     }
 
@@ -578,6 +609,8 @@ class FnDeclNode extends DeclNode {
         myId = id;
         myFormalsList = formalList;
         myBody = body;
+	// localVarSize = 0;
+	// formalVarSize = 0;
     }
 
     /**
@@ -597,9 +630,6 @@ class FnDeclNode extends DeclNode {
         String name = myId.name();
         FnSym sym = null;
 
-	echo("fnDecl");
-	// symTab.print();
-        
         if (symTab.lookupLocal(name) != null) {
             ErrMsg.fatal(myId.lineNum(), myId.charNum(),
                          "Multiply declared identifier");
@@ -628,8 +658,14 @@ class FnDeclNode extends DeclNode {
         if (sym != null) {
             sym.addFormals(typeList);
         }
-        
-        myBody.nameAnalysis(symTab); // process the function body
+	
+	// parameters size
+	sym.formalSpace = typeList.size()*4;
+	echo("after fomralAnalysis, parameter space: " + 
+	     Integer.toString(sym.formalSpace));
+
+	// process the function body and mark localSpace needed
+        myBody.nameAnalysis(symTab, sym.formalSpace*(-1)); 
 
         try {
             symTab.removeScope();  // exit scope
@@ -653,7 +689,8 @@ class FnDeclNode extends DeclNode {
 
 	if(myId.name().equals("main")){
 	    p.print("\t.text\n" + "\t.global main\n" + "main:");
-	    p.println("\t\t# METHOD ENTRY\n" + "\t__start:");
+	    // p.println("\t\t# METHOD ENTRY\n" + "\t__start:");
+	    p.println("\t\t# METHOD ENTRY");
 	}else{
 	    p.print("\t.text\n" + "_"+myId.name()+":");
 	    p.println("\t\t# METHOD ENTRY");
@@ -664,17 +701,19 @@ class FnDeclNode extends DeclNode {
 	Codegen.genPush("$fp");
 	// assembly for formalList
 	myFormalsList.codeGen(p);
+
 	// assembly for fnBody
 	myBody.codeGen(p); // handle declList Only, others let stmtNode itself handle
 
 	p.println("\t\t# FUNCTION EXIT");
 	// exit arguments depends on formalList, need offsets from formalslist and myBody
 	p.println("_"+myId.name()+"_Exit:");
-	int raOffset = myFormalsList.getFormalList().size() * (-4);
+	int raOffset = ((FnSym)myId.sym()).formalSpace * (-1);
 	int fpOffset = raOffset - 4;
-	// Codegen.generate("lw","$ra", "-"+Integer.toString(raOffset)+"($fp)");
+	// space for parameters
 	Codegen.generateIndexed("lw", "$ra", "$fp", raOffset, "get ra");
 	Codegen.generateWithComment("move", "save control link", "$t0", "$fp");
+	// space for local variables
 	Codegen.generateIndexed("lw", "$fp", "$fp", fpOffset, "restore FP");
 	Codegen.generateWithComment("move", "restore SP", "$sp", "$t0");
 
@@ -763,7 +802,9 @@ class FormalDeclNode extends DeclNode {
     public void unparse(PrintWriter p, int indent) {
         myType.unparse(p, 0);
         p.print(" ");
-        p.print(myId.name());
+        // p.print(myId.name());
+	myId.unparse(p,0);
+
     }
 
     // 2 kids
@@ -934,6 +975,7 @@ class StructNode extends TypeNode {
 abstract class StmtNode extends ASTnode {
     abstract public void nameAnalysis(SymTable symTab);
     public boolean typeCheck(TypeNode r){ return false;}
+    public int markOffset(int start){return start;}
 }
 
 class AssignStmtNode extends StmtNode {
@@ -1014,7 +1056,7 @@ class PostIncStmtNode extends StmtNode {
 	    if(s.isGlobal){
 		Codegen.generate("sw", "$t0", "_"+((IdNode)myExp).name());
 	    }else{
-		Codegen.generateIndexed("sw", "$t0", "$fp", (-1)*(s.offset));
+		Codegen.generateIndexed("sw", "$t0", "$fp", (s.offset));
 	    }
 	}
 
@@ -1072,7 +1114,7 @@ class PostDecStmtNode extends StmtNode {
 	    if(s.isGlobal){
 		Codegen.generate("sw", "$t0", "_"+((IdNode)myExp).name());
 	    }else{
-		Codegen.generateIndexed("sw", "$t0", "$fp", (-1)*(s.offset));
+		Codegen.generateIndexed("sw", "$t0", "$fp", s.offset);
 	    }
 	}
     }
@@ -1135,7 +1177,7 @@ class ReadStmtNode extends StmtNode {
 	    if(s.isGlobal){
 		Codegen.generate("sw", "$t0", "_"+((IdNode)myExp).name());
 	    }else{
-		Codegen.generateIndexed("sw", "$t0", "$fp", (-1)*(s.offset));
+		Codegen.generateIndexed("sw", "$t0", "$fp", s.offset);
 	    }
 	}	
     }
@@ -1220,7 +1262,7 @@ class IfStmtNode extends StmtNode {
         myExp = exp;
         myStmtList = slist;
     }
-    
+
     /**
      * nameAnalysis
      * Given a symbol table symTab, do:
@@ -1255,6 +1297,12 @@ class IfStmtNode extends StmtNode {
 	return result && myStmtList.typeCheck(r);
     }
     
+    public int markOffset(int start){
+	start = myDeclList.markOffset(start);
+	start = myStmtList.markOffset(start);
+	return start;
+    }
+
     public void codeGen(PrintWriter p){
 	p.println("\t\t#IF COND");
 	String trueLab = Codegen.nextLabel();
@@ -1264,7 +1312,7 @@ class IfStmtNode extends StmtNode {
 	Codegen.p = p;
 	Codegen.genPop("$t0");
 	Codegen.generate("beq", "$t0", "0", trueLab);
-	myDeclList.codeGen(p);
+	// myDeclList.codeGen(p);
 	myStmtList.codeGen(p);
 
 	Codegen.genLabel(trueLab, "if(alone) is ended");	
@@ -1345,17 +1393,31 @@ class IfElseStmtNode extends StmtNode {
 	return result && myElseStmtList.typeCheck(r);
     }
 
+    public int markOffset(int start){
+	start = myThenDeclList.markOffset(start);
+	start = myThenStmtList.markOffset(start);
+	start = myElseDeclList.markOffset(start);
+	start = myElseStmtList.markOffset(start);
+	return start;
+    }
+
     public void codeGen(PrintWriter p){
 	p.println("\t\t# IF-ELSE COND");
+	String trueLab = Codegen.nextLabel();
+	String doneLab = Codegen.nextLabel();
 	myExp.codeGen(p);
 
-	p.println("\t\t#IF ");
-	myThenDeclList.codeGen(p);
+	Codegen.p = p;
+	Codegen.genPop("$t0");
+	Codegen.generate("beq", "$t0", "0", trueLab);
+	// myThenDeclList.codeGen(p);
 	myThenStmtList.codeGen(p);
-
-	p.println("\t\t#ELSE");
-	myElseDeclList.codeGen(p);
+	Codegen.generate("b",doneLab);
+	Codegen.genLabel(trueLab);
+	// myElseDeclList.codeGen(p);
 	myElseStmtList.codeGen(p);
+	Codegen.genLabel(doneLab);
+
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1423,11 +1485,26 @@ class WhileStmtNode extends StmtNode {
 	return result && myStmtList.typeCheck(r);
     }
 
+    public int markOffset(int start){
+	start = myDeclList.markOffset(start);
+	start = myStmtList.markOffset(start);
+	return start;
+    }
+
     public void codeGen(PrintWriter p){
 	p.println("\t\t#WHILE COND");
+	String trueLab = Codegen.nextLabel();
+	String doneLab = Codegen.nextLabel();
+	Codegen.p = p;
+	Codegen.genLabel(doneLab);
 	myExp.codeGen(p);
-	myDeclList.codeGen(p);
+	// get the final result and evaluate it
+	Codegen.genPop("$t0");
+	Codegen.generate("beq", "$t0", "0", trueLab);
+	// myDeclList.codeGen(p);
 	myStmtList.codeGen(p);
+	Codegen.generate("b", doneLab);
+	Codegen.genLabel(trueLab);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1471,7 +1548,7 @@ class CallStmtNode extends StmtNode {
     }
 
     public void codeGen(PrintWriter p){
-
+	myCall.codeGen(p);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1530,7 +1607,7 @@ class ReturnStmtNode extends StmtNode {
     }
 
     public void codeGen(PrintWriter p){
-
+	myExp.codeGen(p);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1765,7 +1842,7 @@ class IdNode extends ExpNode {
 	    Codegen.generateWithComment("lw", "load global var", "$t0", "_"+ myStrVal) ;
 	}else{
 	// local: use -offset($fp)
-	    Codegen.generateIndexed("lw", "$t0", "$fp", (-1)*mySym.offset, "load local var");
+	    Codegen.generateIndexed("lw", "$t0", "$fp", mySym.offset, "load local var");
 	}
 	    Codegen.genPush("$t0");
     }
@@ -2009,7 +2086,7 @@ class AssignNode extends ExpNode {
 	    if(s.isGlobal){
 		Codegen.generate("sw", "$t0", "_"+((IdNode)myLhs).name());
 	    }else{
-		Codegen.generateIndexed("sw", "$t0", "$fp", (-1)*((IdNode)myLhs).sym().offset);
+		Codegen.generateIndexed("sw", "$t0", "$fp", ((IdNode)myLhs).sym().offset);
 	    }
 
 	}else if(myLhs instanceof DotAccessExpNode){

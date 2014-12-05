@@ -1,15 +1,27 @@
 int gi;
-int main(int a, int b){
-    int li1;
-    bool lb1;
-    bool lb2;
-
-    if(lb1){
-	int b;
-	b = 1;
+bool gb;
+int main(int fa, bool fb){
+    int la;
+    bool lb;
+    if(true){
+	int ia;
+	bool ib;
+	ia = fa;
+	ib = lb;
     }else{
-	b = -1;
-    }   
+	int ea;
+	bool eb;
+	ea = gi + la;
+	eb = fb && gb;
+    }
+
+
+    while(true){
+	int ia;
+	bool ib;
+	ia = fa;
+	ib = lb;
+    }
 
 }
 

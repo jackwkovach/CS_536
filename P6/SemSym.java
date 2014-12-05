@@ -7,7 +7,7 @@ import java.util.*;
 public class SemSym {
     private Type type;
 
-    public int offset; // the offset to sp
+    public int offset; // the offset of a symbol to fp
     public boolean isGlobal;
 
     public SemSym(Type type) {
@@ -21,7 +21,9 @@ public class SemSym {
     }
     
     public String toString() {
-        return type.toString();
+        // return type.toString() + "<" + Integer.toString(offset) + ">";
+        return "<" + Integer.toString(offset) + ">";
+
     }
 }
 
@@ -35,11 +37,17 @@ class FnSym extends SemSym {
     private Type returnType;
     private int numParams;
     private List<Type> paramTypes;
+
+    public int localSpace;
+    public int formalSpace;
     
     public FnSym(Type type, int numparams) {
         super(new FnType());
         returnType = type;
         numParams = numparams;
+
+	formalSpace = 0;
+	localSpace = 0;
     }
 
     public void addFormals(List<Type> L) {
