@@ -1,27 +1,25 @@
 int gi;
-bool gb;
-int main(int fa, bool fb){
-    int la;
-    bool lb;
-    if(true){
-	int ia;
-	bool ib;
-	ia = fa;
-	ib = lb;
-    }else{
-	int ea;
-	bool eb;
-	ea = gi + la;
-	eb = fb && gb;
-    }
+struct point{
+       int x;
+       int y;
+};
 
+struct space{
+       struct point p;
+       int z;
+};
 
-    while(true){
-	int ia;
-	bool ib;
-	ia = fa;
-	ib = lb;
-    }
+void main(int af, int bf){
+     int k;
+     struct point p;
+     struct space s;
+     # p.x = k;
+     # p.y = k;
+     # cout<<"x: ";
+     # cout<<p.x;
+     # cout<<"\ny: ";
+     # cout<<p.y;
 
+    return;
 }
 

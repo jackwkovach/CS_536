@@ -9,11 +9,14 @@ public class SemSym {
 
     public int offset; // the offset of a symbol to fp
     public boolean isGlobal;
+    public int size;
 
     public SemSym(Type type) {
         this.type = type;
+
 	this.offset = -1; // test if initialized
 	this.isGlobal = false;
+	size = 0; //
     }
     
     public Type getType() {
@@ -22,7 +25,7 @@ public class SemSym {
     
     public String toString() {
         // return type.toString() + "<" + Integer.toString(offset) + ">";
-        return "<" + Integer.toString(offset) + ">";
+        return "<" + Integer.toString(offset) + "> |" + size +"|";
 
     }
 }
@@ -112,10 +115,12 @@ class StructSym extends SemSym {
 class StructDefSym extends SemSym {
     // new fields
     private SymTable symTab;
+    public int structSize;
     
     public StructDefSym(SymTable table) {
         super(new StructDefType());
         symTab = table;
+	structSize = 0;
     }
 
     public SymTable getSymTable() {

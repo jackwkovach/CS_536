@@ -182,6 +182,7 @@ class DeclListNode extends ASTnode {
      */
     public void nameAnalysis(SymTable symTab) {
         nameAnalysis(symTab, symTab);
+	declListSize = 0;
     }
 
     /**
@@ -194,6 +195,7 @@ class DeclListNode extends ASTnode {
         for (DeclNode node : myDecls) {
             if (node instanceof VarDeclNode) {
                 ((VarDeclNode)node).nameAnalysis(symTab, globalTab);
+		declListSize += 4;
             } else {
                 node.nameAnalysis(symTab);
             }
@@ -223,6 +225,10 @@ class DeclListNode extends ASTnode {
 	return start;
     }
     
+    public int declListSize(){
+	return declListSize;
+    }
+
     public void codeGen(PrintWriter p){
 	for(DeclNode node : myDecls){
 	    node.codeGen(p);
@@ -243,6 +249,7 @@ class DeclListNode extends ASTnode {
 
     // list of kids (DeclNodes)
     private List<DeclNode> myDecls;
+    private int declListSize;
 }
 
 class FormalsListNode extends ASTnode {
@@ -345,13 +352,14 @@ class FnBodyNode extends ASTnode {
 	return myStmtList.typeCheck(rTypeNode);
     }
 
-    public void codeGen(PrintWriter p){
+    public void codeGen(PrintWriter p, String exitLab){
 	// set space for local variables
 	// List dl = myDeclList.getDeclList();
 	Codegen.p = p;
-	Codegen.generate("subu", "$sp", "$sp", this.localSpace);
+	if(this.localSpace > 0) // only add this command when there are variables declared
+	    Codegen.generate("subu", "$sp", "$sp", this.localSpace);
 	// each stmtnode handles itself
-	myStmtList.codeGen(p);
+	myStmtList.codeGen(p, exitLab);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -396,9 +404,13 @@ class StmtListNode extends ASTnode {
 	return start;
     }
 
-    public void codeGen(PrintWriter p){
+    public void codeGen(PrintWriter p, String exitLab){
 	for(StmtNode sn : myStmts){
-	    sn.codeGen(p);
+	    if(sn instanceof ReturnStmtNode){
+		((ReturnStmtNode)sn).codeGen(p, exitLab);
+	    }else{
+		sn.codeGen(p);
+	    }
 	}
     }
 
@@ -433,7 +445,8 @@ class ExpListNode extends ASTnode {
     }
 
     public void codeGen(PrintWriter p){
-
+	for(ExpNode en : myExps)
+	    en.codeGen(p);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -514,7 +527,7 @@ class VarDeclNode extends DeclNode {
                 badDecl = true;
             }
             else {
-                structId.link(sym);
+		structId.link(sym);
             }
         }
         
@@ -564,11 +577,25 @@ class VarDeclNode extends DeclNode {
         
         return sym;
     }    
-    
+
     public int markOffset(int start){
 	SemSym s = myId.sym();
-	s.offset = start;
-	int size = 4; // depends on var or struct need modify for struct use
+
+	int size = 0;
+
+	if(s instanceof StructSym){
+	    echo("oh, struct with symbols");
+	    SemSym tempSym = ((StructSym)s).getStructType().sym();
+	    SymTable structSymTab = ((StructDefSym)tempSym).getSymTable();
+	    structSymTab.print();
+
+	    // accumlate size and mark each offset
+
+	}else{ // not struct, maybe int or bool
+	    s.offset = start; 
+	    size = 4;
+	}
+
 	return start - size;
 }
 
@@ -688,7 +715,7 @@ class FnDeclNode extends DeclNode {
 	p.println("\t\t# FUNCTION ENTRY");
 
 	if(myId.name().equals("main")){
-	    p.print("\t.text\n" + "\t.global main\n" + "main:");
+	    p.print("\t.text\n" + "\t.globl main\n" + "main:");
 	    // p.println("\t\t# METHOD ENTRY\n" + "\t__start:");
 	    p.println("\t\t# METHOD ENTRY");
 	}else{
@@ -703,11 +730,13 @@ class FnDeclNode extends DeclNode {
 	myFormalsList.codeGen(p);
 
 	// assembly for fnBody
-	myBody.codeGen(p); // handle declList Only, others let stmtNode itself handle
+	String exitLab = "_"+myId.name()+"_Exit";
+	myBody.codeGen(p, exitLab); // handle declList Only, others let stmtNode itself handle
 
 	p.println("\t\t# FUNCTION EXIT");
 	// exit arguments depends on formalList, need offsets from formalslist and myBody
-	p.println("_"+myId.name()+"_Exit:");
+	// p.println("_"+myId.name()+"_Exit:");
+	Codegen.genLabel(exitLab);
 	int raOffset = ((FnSym)myId.sym()).formalSpace * (-1);
 	int fpOffset = raOffset - 4;
 	// space for parameters
@@ -842,10 +871,17 @@ class StructDeclNode extends DeclNode {
         
         // process the fields of the struct
         myDeclList.nameAnalysis(structSymTab, symTab);
-        
+	
         if (!badDecl) {
             try {   // add entry to symbol table
                 StructDefSym sym = new StructDefSym(structSymTab);
+
+		// echo("declared struct with fileds");
+		// structSymTab.print();
+
+		sym.size = myDeclList.declListSize();
+		echo("declared struct with size: " + sym.size);
+
                 symTab.addDecl(name, sym);
                 myId.link(sym);
             } catch (DuplicateSymException ex) {
@@ -1210,6 +1246,7 @@ class WriteStmtNode extends StmtNode {
 	Type t = myExp.typeCheck();
 	IdNode i = myExp.getExpFirstIdNode();
 	// echo("writing: " + t.toString());
+	writeType = t;
 
 	if(t instanceof ErrorType){
 	    return false;
@@ -1240,7 +1277,14 @@ class WriteStmtNode extends StmtNode {
 	myExp.codeGen(p);
 	Codegen.p = p;
 	Codegen.genPop("$a0");
-	Codegen.generate("li", "$v0", "1");
+	if(writeType instanceof IntType){
+	    Codegen.generate("li", "$v0", "1");
+	}else if(writeType instanceof StringType){
+	    Codegen.generate("li", "$v0", "4");
+	}else{
+	    ErrMsg.fatal(0,0,"unkonwn error in writestmt while generating code" + writeType);
+	    System.exit(-1);
+	}
 	Codegen.generate("syscall");
 
     }
@@ -1254,6 +1298,7 @@ class WriteStmtNode extends StmtNode {
 
     // 1 kid
     private ExpNode myExp;
+    private Type writeType;
 }
 
 class IfStmtNode extends StmtNode {
@@ -1606,8 +1651,15 @@ class ReturnStmtNode extends StmtNode {
 	}
     }
 
-    public void codeGen(PrintWriter p){
-	myExp.codeGen(p);
+    public void codeGen(PrintWriter p, String exitLab){
+	p.println("\t\t#RETURN");
+	if(myExp != null){
+	    myExp.codeGen(p);
+	    Codegen.p = p;
+	    Codegen.genPop("$v0");
+	}
+
+	Codegen.generate("b", exitLab);
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -1690,6 +1742,14 @@ class StringLitNode extends ExpNode {
     }
 
     public void codeGen(PrintWriter p){
+	Codegen.p = p;
+	String stringLab = Codegen.nextLabel();
+	p.println("\t.data");
+	p.println(stringLab + ":\t.asciiz  " + myStrVal );
+	p.println("\t.text");
+	
+	Codegen.generate("la","$t0",stringLab);
+	Codegen.genPush("$t0");
 
     }
 
@@ -2182,7 +2242,13 @@ class CallExpNode extends ExpNode {
     }
 
     public void codeGen(PrintWriter p){
-
+	p.println("\t\t#CALL");
+	myExpList.codeGen(p);
+	// then jump
+	Codegen.p = p;
+	Codegen.generate("jal","_"+myId.name());
+	// push the result for other use
+	Codegen.genPush("$v0");
     }
 
     // ** unparse **
@@ -2240,12 +2306,6 @@ abstract class BinaryExpNode extends ExpNode {
     public IdNode getExpFirstIdNode(){
 	return myExp1.getExpFirstIdNode();
     }    
-
-    // public Type typeCheck(){
-    // 	myExp1.typeCheck();
-    // 	myExp2.pe();
-    // 	return new ErrorType();
-    // }
 
     protected Type checkArithmetic(ExpNode lExp, ExpNode rExp){
 	Type lType = lExp.typeCheck();
