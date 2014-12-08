@@ -9,10 +9,20 @@ struct space{
        int z;
 };
 
+struct wtf{
+     struct space s;
+     struct point p;  
+
+     int z;
+
+};
+
+
 void main(int af, int bf){
      int k;
      struct point p;
      struct space s;
+     struct wtf w;
      # p.x = k;
      # p.y = k;
      # cout<<"x: ";

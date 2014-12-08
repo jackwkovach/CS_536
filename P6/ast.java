@@ -182,7 +182,7 @@ class DeclListNode extends ASTnode {
      */
     public void nameAnalysis(SymTable symTab) {
         nameAnalysis(symTab, symTab);
-	declListSize = 0;
+	// declListSize = 0;
     }
 
     /**
@@ -195,7 +195,7 @@ class DeclListNode extends ASTnode {
         for (DeclNode node : myDecls) {
             if (node instanceof VarDeclNode) {
                 ((VarDeclNode)node).nameAnalysis(symTab, globalTab);
-		declListSize += 4;
+		// declListSize += 4;
             } else {
                 node.nameAnalysis(symTab);
             }
@@ -224,10 +224,6 @@ class DeclListNode extends ASTnode {
 
 	return start;
     }
-    
-    public int declListSize(){
-	return declListSize;
-    }
 
     public void codeGen(PrintWriter p){
 	for(DeclNode node : myDecls){
@@ -249,7 +245,7 @@ class DeclListNode extends ASTnode {
 
     // list of kids (DeclNodes)
     private List<DeclNode> myDecls;
-    private int declListSize;
+    // private int declListSize;
 }
 
 class FormalsListNode extends ASTnode {
@@ -475,6 +471,8 @@ abstract class DeclNode extends ASTnode {
     abstract public SemSym nameAnalysis(SymTable symTab);
 
     public int markOffset(int start){return start;}
+
+    public int markInnerOffset(int start){return start;} // mark the offset inside a struct
 }
 
 class VarDeclNode extends DeclNode {
@@ -555,12 +553,11 @@ class VarDeclNode extends DeclNode {
 		    // sym.offset = 8 + 4 * symTab.variableInScope();
 		}
 
-		if(sym.isGlobal)
-		    echo("varDecl: " + myId.name() + " -> Global");
-		else
-		    echo("varDecl: " + myId.name() + " -> Local");
-
-		echo("varDecl: " + myId.name() + " offset -> " + sym.offset);
+		// if(sym.isGlobal)
+		//     echo("varDecl: " + myId.name() + " -> Global");
+		// else
+		//     echo("varDecl: " + myId.name() + " -> Local");
+		// echo("varDecl: " + myId.name() + " offset -> " + sym.offset);
 
                 symTab.addDecl(name, sym);
                 myId.link(sym);
@@ -580,14 +577,16 @@ class VarDeclNode extends DeclNode {
 
     public int markOffset(int start){
 	SemSym s = myId.sym();
-
 	int size = 0;
-
 	if(s instanceof StructSym){
-	    echo("oh, struct with symbols");
 	    SemSym tempSym = ((StructSym)s).getStructType().sym();
-	    SymTable structSymTab = ((StructDefSym)tempSym).getSymTable();
-	    structSymTab.print();
+	    echo("struct ----> " + myId.name() + " -offset: " + start);
+	    // this is the offset of the start of a struct declaration
+	    size = tempSym.size;
+	    s.offset = start;  
+
+	    // traverse every id inside the struct and mark them with an offset
+	    // SymTable structSymTab = ((StructDefSym)tempSym).getSymTable();
 
 	    // accumlate size and mark each offset
 
@@ -871,15 +870,14 @@ class StructDeclNode extends DeclNode {
         
         // process the fields of the struct
         myDeclList.nameAnalysis(structSymTab, symTab);
-	
+	// get the size
+
         if (!badDecl) {
             try {   // add entry to symbol table
                 StructDefSym sym = new StructDefSym(structSymTab);
 
-		// echo("declared struct with fileds");
-		// structSymTab.print();
+		sym.size = 0 - myDeclList.markOffset(0);
 
-		sym.size = myDeclList.declListSize();
 		echo("declared struct with size: " + sym.size);
 
                 symTab.addDecl(name, sym);

@@ -8,13 +8,16 @@ public class SemSym {
     private Type type;
 
     public int offset; // the offset of a symbol to fp
+    public int structOffset; // the offset of the id as it is declared inside a struct
     public boolean isGlobal;
     public int size;
+
 
     public SemSym(Type type) {
         this.type = type;
 
 	this.offset = -1; // test if initialized
+	this.structOffset = -1;
 	this.isGlobal = false;
 	size = 0; //
     }
