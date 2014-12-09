@@ -16,8 +16,8 @@ public class SemSym {
     public SemSym(Type type) {
         this.type = type;
 
-	this.offset = -1; // test if initialized
-	this.structOffset = -1;
+	this.offset = 0; // test if initialized
+	this.structOffset = 0;
 	this.isGlobal = false;
 	size = 0; //
     }
@@ -28,7 +28,7 @@ public class SemSym {
     
     public String toString() {
         // return type.toString() + "<" + Integer.toString(offset) + ">";
-        return "<" + Integer.toString(offset) + "> |" + size +"|";
+        return "<" + Integer.toString(offset) + "> $" + structOffset + "$"  + " |" + size +"|";
 
     }
 }

@@ -9,22 +9,28 @@ struct space{
        int z;
 };
 
-struct wtf{
+struct complex{
      struct space s;
      struct point p;  
-
      int z;
-
 };
 
 
 void main(int af, int bf){
      int k;
-     struct point p;
-     struct space s;
-     struct wtf w;
-     # p.x = k;
-     # p.y = k;
+     struct complex com;
+     struct complex com2;
+
+     com.s.p.x = 1;
+     com.p.y = 2;
+
+     com2.s.p.y = 3;
+     com2.p.x = 4;
+     # w.p.x = w.p.y;
+     # w.z = 100;
+
+#     p.x = p.y;
+
      # cout<<"x: ";
      # cout<<p.x;
      # cout<<"\ny: ";

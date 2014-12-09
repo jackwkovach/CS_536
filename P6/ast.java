@@ -267,6 +267,7 @@ class FormalsListNode extends ASTnode {
             SemSym sym = node.nameAnalysis(symTab);
             if (sym != null) {
 		// mark offset of each variables in formalList for codeGen
+		sym.size = 4;
 		sym.offset = formalOffset; // mark variable's offset
 		// fs.formalSpace = formalOffset + 4; // set parameter's space
 		formalOffset -= 4;
@@ -471,8 +472,6 @@ abstract class DeclNode extends ASTnode {
     abstract public SemSym nameAnalysis(SymTable symTab);
 
     public int markOffset(int start){return start;}
-
-    public int markInnerOffset(int start){return start;} // mark the offset inside a struct
 }
 
 class VarDeclNode extends DeclNode {
@@ -539,9 +538,11 @@ class VarDeclNode extends DeclNode {
             try {
                 if (myType instanceof StructNode) {
                     sym = new StructSym(structId);
+		    sym.size = structId.sym().size;
                 }
                 else {
                     sym = new SemSym(myType.type());
+		    sym.size = 4;
                 }
 
 		// this section mark each variable as global or local
@@ -580,14 +581,29 @@ class VarDeclNode extends DeclNode {
 	int size = 0;
 	if(s instanceof StructSym){
 	    SemSym tempSym = ((StructSym)s).getStructType().sym();
-	    echo("struct ----> " + myId.name() + " -offset: " + start);
+	    // echo("struct ----> " + myId.name() + " -offset: " + start);
 	    // this is the offset of the start of a struct declaration
 	    size = tempSym.size;
 	    s.offset = start;  
 
 	    // traverse every id inside the struct and mark them with an offset
-	    // SymTable structSymTab = ((StructDefSym)tempSym).getSymTable();
+	    SymTable structSymTab = ((StructDefSym)tempSym).getSymTable();
+	    // echo("fields contents: ");
 
+	    //mark each field
+	    HashMap<String, SemSym> fields = structSymTab.getField();
+	    int innerOffset = 0;
+	    Iterator it = fields.entrySet().iterator();
+	    while (it.hasNext()) {
+		Map.Entry pairs = (Map.Entry)it.next();
+		SemSym fieldSym = (SemSym)pairs.getValue();
+
+		fieldSym.structOffset = innerOffset;
+		// fieldSym.offset = start + innerOffset;
+		// echo(pairs.getKey()+ " offset: "+ fieldSym.offset + " -innerOffset: " + fieldSym.structOffset);
+
+		innerOffset -= fieldSym.size;
+	    }
 	    // accumlate size and mark each offset
 
 	}else{ // not struct, maybe int or bool
@@ -687,8 +703,8 @@ class FnDeclNode extends DeclNode {
 	
 	// parameters size
 	sym.formalSpace = typeList.size()*4;
-	echo("after fomralAnalysis, parameter space: " + 
-	     Integer.toString(sym.formalSpace));
+	// echo("after fomralAnalysis, parameter space: " + 
+	//      Integer.toString(sym.formalSpace));
 
 	// process the function body and mark localSpace needed
         myBody.nameAnalysis(symTab, sym.formalSpace*(-1)); 
@@ -869,16 +885,15 @@ class StructDeclNode extends DeclNode {
         SymTable structSymTab = new SymTable();
         
         // process the fields of the struct
+	// mark the offset of each fields inside the struct
         myDeclList.nameAnalysis(structSymTab, symTab);
 	// get the size
 
         if (!badDecl) {
             try {   // add entry to symbol table
                 StructDefSym sym = new StructDefSym(structSymTab);
-
 		sym.size = 0 - myDeclList.markOffset(0);
-
-		echo("declared struct with size: " + sym.size);
+		// echo("declared struct with size: " + sym.size);
 
                 symTab.addDecl(name, sym);
                 myId.link(sym);
@@ -1825,6 +1840,8 @@ class IdNode extends ExpNode {
         myLineNum = lineNum;
         myCharNum = charNum;
         myStrVal = strVal;
+
+	this.offset = 0;
     }
 
     /**
@@ -1920,6 +1937,8 @@ class IdNode extends ExpNode {
     private int myCharNum;
     private String myStrVal;
     private SemSym mySym;
+
+    public int offset; // for code gen
 }
 
 class DotAccessExpNode extends ExpNode {
@@ -1965,16 +1984,17 @@ class DotAccessExpNode extends ExpNode {
         badAccess = false;
         SymTable structSymTab = null; // to lookup RHS of dot-access
         SemSym sym = null;
-        
+
+	SemSym locSym = null; // for mark offset of each field
+
         myLoc.nameAnalysis(symTab);  // do name analysis on LHS
         
         // if myLoc is really an ID, then sym will be a link to the ID's symbol
         if (myLoc instanceof IdNode) {
             IdNode id = (IdNode)myLoc;
             sym = id.sym();
-            
             // check ID has been declared to be of a struct type
-            
+
             if (sym == null) { // ID was undeclared
                 badAccess = true;
             }
@@ -1982,6 +2002,10 @@ class DotAccessExpNode extends ExpNode {
                 // get symbol table for struct type
                 SemSym tempSym = ((StructSym)sym).getStructType().sym();
                 structSymTab = ((StructDefSym)tempSym).getSymTable();
+		echo("accessing: " + id.name() + " offset: " + sym.offset);
+
+		locSym = sym; // save for later use
+		id.link(sym); 
             } 
             else {  // LHS is not a struct type
                 ErrMsg.fatal(id.lineNum(), id.charNum(), 
@@ -1996,7 +2020,8 @@ class DotAccessExpNode extends ExpNode {
         // a link to the Sym for the struct type RHSid was declared to be
         else if (myLoc instanceof DotAccessExpNode) {
             DotAccessExpNode loc = (DotAccessExpNode)myLoc;
-            
+
+
             if (loc.badAccess) {  // if errors in processing myLoc
                 badAccess = true; // don't continue proccessing this dot-access
             }
@@ -2011,6 +2036,8 @@ class DotAccessExpNode extends ExpNode {
                 else {  // get the struct's symbol table in which to lookup RHS
                     if (sym instanceof StructDefSym) {
                         structSymTab = ((StructDefSym)sym).getSymTable();
+			locSym = loc.getExpFirstIdNode().sym();
+			// echo("accessing: " + sym.offset + locSym.toString());			
                     }
                     else {
                         System.err.println("Unexpected Sym type in DotAccessExpNode");
@@ -2028,7 +2055,6 @@ class DotAccessExpNode extends ExpNode {
         
         // do name analysis on RHS of dot-access in the struct's symbol table
         if (!badAccess) {
-        
             sym = structSymTab.lookupGlobal(myId.name()); // lookup
             if (sym == null) { // not found - RHS is not a valid field name
                 ErrMsg.fatal(myId.lineNum(), myId.charNum(), 
@@ -2037,9 +2063,13 @@ class DotAccessExpNode extends ExpNode {
             }
             
             else {
+		sym.offset = locSym.offset + sym.structOffset;
+		echo("accessing: " + myId.name() + " -offset " + sym.offset);
                 myId.link(sym);  // link the symbol
+		myId.offset = sym.offset;
                 // if RHS is itself as struct type, link the symbol for its struct 
                 // type to this dot-access node (to allow chained dot-access)
+
                 if (sym instanceof StructSym) {
                     mySym = ((StructSym)sym).getStructType().sym();
                 }
@@ -2060,7 +2090,10 @@ class DotAccessExpNode extends ExpNode {
     }
 
     public void codeGen(PrintWriter p){
-
+	echo("codegen in dot: " + myId.name() + ": " +myId.offset);
+	Codegen.p = p;
+	Codegen.generateIndexed("lw", "t0", "$fp", myId.offset, "load struct field: " + myId.name());
+	Codegen.genPush("$t0");
     }
 
     public void unparse(PrintWriter p, int indent) {
@@ -2134,10 +2167,16 @@ class AssignNode extends ExpNode {
     }
 
     public void codeGen(PrintWriter p){
+	echo("codeGen right side");
 	myExp.codeGen(p);
+
+
 	Codegen.p = p;
 
 	Codegen.generateIndexed("lw", "$t0", "$sp", 4, "peek");
+
+	echo("codeGen left side");
+
 	if(myLhs instanceof IdNode){
 	    // assign to IdNode
 	    SemSym s = ((IdNode)myLhs).sym();
@@ -2149,6 +2188,7 @@ class AssignNode extends ExpNode {
 
 	}else if(myLhs instanceof DotAccessExpNode){
 	    // assign to struct access
+	    myLhs.codeGen(p);
 
 	}else{
 	    ErrMsg.fatal(0,0,"Unexpected error in codeGen of IDNode");

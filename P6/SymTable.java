@@ -57,8 +57,16 @@ public class SymTable {
 	return list.size();
     }
 
-    public int variableInScope(){
-	return list.get(0).size();
+    // public int variableInScope(){
+    // 	return list.get(0).size();
+    // }
+
+    public HashMap<String, SemSym> getField(){
+	if(!list.isEmpty()){
+	    return list.get(0);
+	}
+
+	return null;
     }
     
     public void print() {
