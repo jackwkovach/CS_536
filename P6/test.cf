@@ -1,41 +1,18 @@
 int gi;
-struct point{
-       int x;
-       int y;
-};
-
-struct space{
-       struct point p;
-       int z;
-};
-
-struct complex{
-     struct space s;
-     struct point p;  
-     int z;
-};
+int func(int a, int b){
+  
+  return a + b - 9;
+}
 
 
 void main(int af, int bf){
-     int k;
-     struct complex com;
-     struct complex com2;
+  int k;
+  bool b;
+  b = "abc" == "abc";
 
-     com.s.p.x = 1;
-     com.p.y = 2;
 
-     com2.s.p.y = 3;
-     com2.p.x = 4;
-     # w.p.x = w.p.y;
-     # w.z = 100;
+  cout<<b;
 
-#     p.x = p.y;
-
-     # cout<<"x: ";
-     # cout<<p.x;
-     # cout<<"\ny: ";
-     # cout<<p.y;
-
-    return;
+  return;
 }
 

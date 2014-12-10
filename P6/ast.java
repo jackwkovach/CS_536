@@ -337,6 +337,7 @@ class FnBodyNode extends ASTnode {
 
         myStmtList.nameAnalysis(symTab);
 	offset = myStmtList.markOffset(offset);
+
 	echo("offset -->" + offset + "formalOffset -->" + formalOffset);
 
 	/**
@@ -1107,6 +1108,8 @@ class PostIncStmtNode extends StmtNode {
 	    }else{
 		Codegen.generateIndexed("sw", "$t0", "$fp", (s.offset));
 	    }
+	}else if(myExp instanceof DotAccessExpNode){
+	    Codegen.generateIndexed("sw", "$t0", "$fp", ((DotAccessExpNode)myExp).unrollDot());
 	}
 
     }
@@ -1165,6 +1168,8 @@ class PostDecStmtNode extends StmtNode {
 	    }else{
 		Codegen.generateIndexed("sw", "$t0", "$fp", s.offset);
 	    }
+	}else if(myExp instanceof DotAccessExpNode){
+	    Codegen.generateIndexed("sw", "$t0", "$fp", ((DotAccessExpNode)myExp).unrollDot());
 	}
     }
 
@@ -1228,6 +1233,8 @@ class ReadStmtNode extends StmtNode {
 	    }else{
 		Codegen.generateIndexed("sw", "$t0", "$fp", s.offset);
 	    }
+	}else if(myExp instanceof DotAccessExpNode){
+	    Codegen.generateIndexed("sw", "$t0", "$fp", ((DotAccessExpNode)myExp).unrollDot());
 	}	
     }
 
@@ -1294,6 +1301,8 @@ class WriteStmtNode extends StmtNode {
 	    Codegen.generate("li", "$v0", "1");
 	}else if(writeType instanceof StringType){
 	    Codegen.generate("li", "$v0", "4");
+	}else if(writeType instanceof BoolType){
+	    Codegen.generate("li", "$v0", "1");
 	}else{
 	    ErrMsg.fatal(0,0,"unkonwn error in writestmt while generating code" + writeType);
 	    System.exit(-1);
@@ -1371,7 +1380,7 @@ class IfStmtNode extends StmtNode {
 	Codegen.genPop("$t0");
 	Codegen.generate("beq", "$t0", "0", trueLab);
 	// myDeclList.codeGen(p);
-	myStmtList.codeGen(p);
+	myStmtList.codeGen(p, trueLab);
 
 	Codegen.genLabel(trueLab, "if(alone) is ended");	
     }
@@ -1469,11 +1478,11 @@ class IfElseStmtNode extends StmtNode {
 	Codegen.genPop("$t0");
 	Codegen.generate("beq", "$t0", "0", trueLab);
 	// myThenDeclList.codeGen(p);
-	myThenStmtList.codeGen(p);
+	myThenStmtList.codeGen(p, trueLab);
 	Codegen.generate("b",doneLab);
 	Codegen.genLabel(trueLab);
 	// myElseDeclList.codeGen(p);
-	myElseStmtList.codeGen(p);
+	myElseStmtList.codeGen(p, trueLab);
 	Codegen.genLabel(doneLab);
 
     }
@@ -1560,7 +1569,7 @@ class WhileStmtNode extends StmtNode {
 	Codegen.genPop("$t0");
 	Codegen.generate("beq", "$t0", "0", trueLab);
 	// myDeclList.codeGen(p);
-	myStmtList.codeGen(p);
+	myStmtList.codeGen(p, trueLab);
 	Codegen.generate("b", doneLab);
 	Codegen.genLabel(trueLab);
     }
@@ -1752,6 +1761,10 @@ class StringLitNode extends ExpNode {
 
     public Type typeCheck(){
 	return new StringType();
+    }
+
+    public String stringContent(){
+	return myStrVal;
     }
 
     public void codeGen(PrintWriter p){
@@ -1946,6 +1959,9 @@ class DotAccessExpNode extends ExpNode {
         myLoc = loc;    
         myId = id;
         mySym = null;
+
+	this.dotLeftOffset = 0;
+	this.dotRightOffset = 0;
     }
 
     /**
@@ -1985,8 +2001,6 @@ class DotAccessExpNode extends ExpNode {
         SymTable structSymTab = null; // to lookup RHS of dot-access
         SemSym sym = null;
 
-	SemSym locSym = null; // for mark offset of each field
-
         myLoc.nameAnalysis(symTab);  // do name analysis on LHS
         
         // if myLoc is really an ID, then sym will be a link to the ID's symbol
@@ -2002,9 +2016,9 @@ class DotAccessExpNode extends ExpNode {
                 // get symbol table for struct type
                 SemSym tempSym = ((StructSym)sym).getStructType().sym();
                 structSymTab = ((StructDefSym)tempSym).getSymTable();
-		echo("accessing: " + id.name() + " offset: " + sym.offset);
+		// this.dotLeftOffset = sym.offset;
+		// echo("accessing: " + id.name() + " offset: " + this.dotLeftOffset);
 
-		locSym = sym; // save for later use
 		id.link(sym); 
             } 
             else {  // LHS is not a struct type
@@ -2021,7 +2035,6 @@ class DotAccessExpNode extends ExpNode {
         else if (myLoc instanceof DotAccessExpNode) {
             DotAccessExpNode loc = (DotAccessExpNode)myLoc;
 
-
             if (loc.badAccess) {  // if errors in processing myLoc
                 badAccess = true; // don't continue proccessing this dot-access
             }
@@ -2036,8 +2049,9 @@ class DotAccessExpNode extends ExpNode {
                 else {  // get the struct's symbol table in which to lookup RHS
                     if (sym instanceof StructDefSym) {
                         structSymTab = ((StructDefSym)sym).getSymTable();
-			locSym = loc.getExpFirstIdNode().sym();
-			// echo("accessing: " + sym.offset + locSym.toString());			
+
+			// this.dotLeftOffset = loc.dotRightOffset;
+
                     }
                     else {
                         System.err.println("Unexpected Sym type in DotAccessExpNode");
@@ -2063,10 +2077,11 @@ class DotAccessExpNode extends ExpNode {
             }
             
             else {
-		sym.offset = locSym.offset + sym.structOffset;
-		echo("accessing: " + myId.name() + " -offset " + sym.offset);
+		// this.dotRightOffset = this.dotLeftOffset + sym.structOffset;
+
+		// echo("accessing: " + myId.name() + " -offset " + this.dotRightOffset);
                 myId.link(sym);  // link the symbol
-		myId.offset = sym.offset;
+		// myId.offset = sym.offset;
                 // if RHS is itself as struct type, link the symbol for its struct 
                 // type to this dot-access node (to allow chained dot-access)
 
@@ -2075,6 +2090,7 @@ class DotAccessExpNode extends ExpNode {
                 }
             }
         }
+
     }    
 
     public IdNode getExpFirstIdNode(){
@@ -2089,16 +2105,35 @@ class DotAccessExpNode extends ExpNode {
 	return myId.sym().getType();
     }
 
+    public int unrollDot(){
+	if(myLoc instanceof IdNode){
+	    return ((IdNode)myLoc).sym().offset + ((IdNode)myId).sym().structOffset;
+	}else if(myLoc instanceof DotAccessExpNode){
+	    DotAccessExpNode DA = (DotAccessExpNode)myLoc;
+	    // return DA.unrollDot() + DA.getExpFirstIdNode().sym().structOffset;
+	    return DA.unrollDot() + ((IdNode)myId).sym().structOffset;
+	}else{
+	    // error
+	    echo("error in unrolling dot");
+	    return -1;
+	}
+    }
+
+
     public void codeGen(PrintWriter p){
 	echo("codegen in dot: " + myId.name() + ": " +myId.offset);
+	// need access again..
+	this.dotRightOffset = unrollDot();
+
 	Codegen.p = p;
-	Codegen.generateIndexed("lw", "t0", "$fp", myId.offset, "load struct field: " + myId.name());
+	Codegen.generateIndexed("lw", "$t0", "$fp", this.dotRightOffset, "load struct field: " + myId.name());
 	Codegen.genPush("$t0");
     }
 
     public void unparse(PrintWriter p, int indent) {
         myLoc.unparse(p, 0);
         p.print(".");
+	myId.sym().offset = dotRightOffset;
         myId.unparse(p, 0);
     }
 
@@ -2107,6 +2142,10 @@ class DotAccessExpNode extends ExpNode {
     private IdNode myId;
     private SemSym mySym;          // link to Sym for struct type
     private boolean badAccess;  // to prevent multiple, cascading errors
+
+    public int dotLeftOffset;
+    public int dotRightOffset;
+    
 }
 
 class AssignNode extends ExpNode {
@@ -2167,15 +2206,9 @@ class AssignNode extends ExpNode {
     }
 
     public void codeGen(PrintWriter p){
-	echo("codeGen right side");
 	myExp.codeGen(p);
-
-
 	Codegen.p = p;
-
 	Codegen.generateIndexed("lw", "$t0", "$sp", 4, "peek");
-
-	echo("codeGen left side");
 
 	if(myLhs instanceof IdNode){
 	    // assign to IdNode
@@ -2188,8 +2221,8 @@ class AssignNode extends ExpNode {
 
 	}else if(myLhs instanceof DotAccessExpNode){
 	    // assign to struct access
-	    myLhs.codeGen(p);
-
+	    Codegen.generateIndexed("sw", "$t0", "$fp", ((DotAccessExpNode)myLhs).unrollDot());
+	    
 	}else{
 	    ErrMsg.fatal(0,0,"Unexpected error in codeGen of IDNode");
 	}
@@ -2753,9 +2786,25 @@ class EqualsNode extends BinaryExpNode {
     }
 
     public void codeGen(PrintWriter p){
-	myExp1.codeGen(p);
-	myExp2.codeGen(p);
+	// string comparison
+	if(myExp1 instanceof StringLitNode && myExp2 instanceof StringLitNode){
+	    String se1 = ((StringLitNode)myExp1).stringContent();
+	    String se2 = ((StringLitNode)myExp2).stringContent();
+	    int t1, t2;
+	    if(se1.equals(se2)){
+		t1 = t2 = 0;
+	    }else{
+		t1 = 0;
+		t2 = 1;
+	    }
 
+
+
+
+	}else{
+	    myExp1.codeGen(p);
+	    myExp2.codeGen(p);
+	}
 	// pop, compare and push
 	Codegen.p = p;
 	Codegen.genPop("$t1");
@@ -2763,6 +2812,7 @@ class EqualsNode extends BinaryExpNode {
 	Codegen.generate("seq", "$t0", "$t0", "$t1");
 
 	Codegen.genPush("$t0");
+
     }
 
     public void unparse(PrintWriter p, int indent) {
