@@ -151,6 +151,7 @@ class ProgramNode extends ASTnode {
 	}else{
 	    ErrMsg.fatal(0,0,"No main function");
 	}
+
     }
     
     public boolean typeCheck(){
@@ -160,6 +161,10 @@ class ProgramNode extends ASTnode {
 
     public void codeGen(PrintWriter p){
 	myDeclList.codeGen(p);
+	System.out.println("\n***DONE***\n***Assembly code generated successfully in test_out.s***");
+
+	if(p!= null)
+	    p.close();
     }
     
     public void unparse(PrintWriter p, int indent) {
@@ -338,7 +343,7 @@ class FnBodyNode extends ASTnode {
         myStmtList.nameAnalysis(symTab);
 	offset = myStmtList.markOffset(offset);
 
-	echo("offset -->" + offset + "formalOffset -->" + formalOffset);
+	// echo("offset -->" + offset + "formalOffset -->" + formalOffset);
 
 	/**
 	 * Thus the local space for local parameters is the -offset - <parameter size + 8>
@@ -2121,7 +2126,7 @@ class DotAccessExpNode extends ExpNode {
 
 
     public void codeGen(PrintWriter p){
-	echo("codegen in dot: " + myId.name() + ": " +myId.offset);
+	// echo("codegen in dot: " + myId.name() + ": " +myId.offset);
 	// need access again..
 	this.dotRightOffset = unrollDot();
 
@@ -2786,27 +2791,32 @@ class EqualsNode extends BinaryExpNode {
     }
 
     public void codeGen(PrintWriter p){
+	p.println("\t\t#EQUALITY");
+	Codegen.p = p;
 	// string comparison
 	if(myExp1 instanceof StringLitNode && myExp2 instanceof StringLitNode){
 	    String se1 = ((StringLitNode)myExp1).stringContent();
 	    String se2 = ((StringLitNode)myExp2).stringContent();
-	    int t1, t2;
 	    if(se1.equals(se2)){
-		t1 = t2 = 0;
+		// load t1 t2 with equal value
+		Codegen.generate("li","$t0",0);
+		Codegen.genPush("$t0");
+		Codegen.generate("li","$t1",0);
+		Codegen.genPush("$t1");
 	    }else{
-		t1 = 0;
-		t2 = 1;
+		Codegen.generate("li","$t0",1);
+		Codegen.genPush("$t0");
+		Codegen.generate("li","$t1",0);
+		Codegen.genPush("$t1");
+		// load t1 t2 with different value
 	    }
-
-
-
 
 	}else{
 	    myExp1.codeGen(p);
 	    myExp2.codeGen(p);
 	}
 	// pop, compare and push
-	Codegen.p = p;
+
 	Codegen.genPop("$t1");
 	Codegen.genPop("$t0");
 	Codegen.generate("seq", "$t0", "$t0", "$t1");
@@ -2834,16 +2844,37 @@ class NotEqualsNode extends BinaryExpNode {
     }
 
     public void codeGen(PrintWriter p){
-	myExp1.codeGen(p);
-	myExp2.codeGen(p);
-
-	// pop, compare and push
+	p.println("\t\t#NOT-EQUALITY");
 	Codegen.p = p;
-	Codegen.genPop("$t1");
-	Codegen.genPop("$t0");
-	Codegen.generate("sne", "$t0", "$t0", "$t1");
+	if(myExp1 instanceof StringLitNode && myExp2 instanceof StringLitNode){
+	    String se1 = ((StringLitNode)myExp1).stringContent();
+	    String se2 = ((StringLitNode)myExp2).stringContent();
+	    if(se1.equals(se2)){
+		// load t1 t2 with equal value
+		Codegen.generate("li","$t0",0);
+		Codegen.genPush("$t0");
+		Codegen.generate("li","$t1",0);
+		Codegen.genPush("$t1");
+	    }else{
+		Codegen.generate("li","$t0",1);
+		Codegen.genPush("$t0");
+		Codegen.generate("li","$t1",0);
+		Codegen.genPush("$t1");
+		// load t1 t2 with different value
+	    }
 
-	Codegen.genPush("$t0");
+	}else{
+
+	    myExp1.codeGen(p);
+	    myExp2.codeGen(p);
+	}
+	    // pop, compare and push
+
+	    Codegen.genPop("$t1");
+	    Codegen.genPop("$t0");
+	    Codegen.generate("sne", "$t0", "$t0", "$t1");
+
+	    Codegen.genPush("$t0");
     }
 
     public void unparse(PrintWriter p, int indent) {

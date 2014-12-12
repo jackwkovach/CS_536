@@ -24,7 +24,7 @@ public class P6 {
     public static final int RESULT_CODEGEN_ERROR = 4;
     public static final int RESULT_OTHER_ERROR = -1;
 
-    private PrintWriter co;
+    // private PrintWriter co;
 
     /**
      * P5 constructor for client programs and testers. Note that
@@ -77,7 +77,7 @@ public class P6 {
     public void setOutfile(String filename) throws BadOutfileException{
         try {
             outFile = new PrintWriter(filename);
-	    co = new PrintWriter("check_offset.out");
+	    // co = new PrintWriter("check_offset.out");
         } catch (FileNotFoundException ex) {
 	    throw new BadOutfileException(ex, filename);
         }
@@ -104,10 +104,10 @@ public class P6 {
 	    outFile.close();
 	}
 
-	if(co != null){
-	    co.flush();
-	    co.close();
-	}
+	// if(co != null){
+	//     co.flush();
+	//     co.close();
+	// }
     }
 	
     /** 
@@ -165,7 +165,7 @@ public class P6 {
 	astRoot.codeGen(outFile);
 
 
-	astRoot.unparse(co, 0);
+	// astRoot.unparse(co, 0);
 	return P6.RESULT_CORRECT;
     }
 	

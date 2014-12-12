@@ -36,3 +36,7 @@ Or you can compile by yourself: <br/>
 
 ####Project 5
 * Some type check
+
+####Project 6
+* Code generate
+* Handle structs
